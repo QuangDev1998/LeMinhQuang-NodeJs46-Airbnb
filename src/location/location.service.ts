@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateLocationDto, UpdateLocationDto } from './dto/location.dto';
 
@@ -12,7 +16,7 @@ export class LocationService {
 
   async getById(id: number) {
     const location = await this.prisma.viTri.findUnique({
-      where: { id: Number(id) },
+      where: { id },
     });
     if (!location) throw new NotFoundException('ID không hợp lệ');
     return location;
@@ -79,10 +83,19 @@ export class LocationService {
   }
 
   async uploadImage(id: number, filePath: string) {
-    await this.getById(id);
-    return this.prisma.viTri.update({
+    // Kiểm tra vị trí có tồn tại
+    const viTri = await this.getById(id);
+
+    // Cập nhật hình ảnh vào DB
+    const updatedViTri = await this.prisma.viTri.update({
       where: { id },
       data: { hinh_anh: filePath },
     });
+
+    // Trả về kết quả
+    return {
+      message: 'Upload hình thành công',
+      data: updatedViTri,
+    };
   }
 }

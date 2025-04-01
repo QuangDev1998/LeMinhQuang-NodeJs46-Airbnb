@@ -15,7 +15,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
 
 @ApiTags('DatPhong')
 @ApiBearerAuth('access-token')
-@Controller('api/dat-phong')
+@Controller('dat-phong')
 @UseGuards(JwtAuthGuard)
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}

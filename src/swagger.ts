@@ -4,7 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 export const setupSwagger = (app: INestApplication) => {
   const config = new DocumentBuilder()
     .setTitle('Airbnb API')
-    .setDescription('API cho dự án Airbnb Clone')
+    .setDescription('API Airbnb')
     .setVersion('1.0')
     .addBearerAuth(
       {
@@ -12,7 +12,7 @@ export const setupSwagger = (app: INestApplication) => {
         scheme: 'bearer',
         bearerFormat: 'JWT',
         name: 'Authorization',
-        description: 'Nhập token dạng: Bearer <token>',
+        description: 'Nhập Token',
         in: 'header',
       },
       'access-token',

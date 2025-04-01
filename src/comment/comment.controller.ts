@@ -15,7 +15,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
 
 @ApiTags('BinhLuan')
 @ApiBearerAuth('access-token')
-@Controller('api/binh-luan')
+@Controller('binh-luan')
 @UseGuards(JwtAuthGuard)
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}

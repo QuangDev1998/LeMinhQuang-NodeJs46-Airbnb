@@ -30,14 +30,50 @@ export class RoomService {
 
   async remove(id: number) {
     await this.getById(id);
-    return this.prisma.phong.delete({ where: { id } });
+
+    await this.prisma.datPhong.deleteMany({
+      where: { ma_phong: id },
+    });
+
+    await this.prisma.binhLuan.deleteMany({
+      where: { ma_cong_viec: id },
+    });
+
+    await this.prisma.phong.delete({
+      where: { id },
+    });
+
+    return {
+      message: `Xóa phòng có id = ${id} thành công`,
+    };
   }
 
-  paginate(page: number, pageSize: number) {
-    return this.prisma.phong.findMany({
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    });
+  async paginate(pageIndex: number, pageSize: number, keyword?: string) {
+    const skip = (pageIndex - 1) * pageSize;
+    const where = keyword
+      ? {
+          ten_phong: {
+            contains: keyword,
+            mode: 'insensitive',
+          },
+        }
+      : {};
+
+    const [rooms, total] = await Promise.all([
+      this.prisma.phong.findMany({
+        where,
+        skip,
+        take: pageSize,
+      }),
+      this.prisma.phong.count({ where }),
+    ]);
+
+    return {
+      data: rooms,
+      totalRow: total,
+      pageIndex,
+      pageSize,
+    };
   }
 
   getByLocation(viTriId: number) {
