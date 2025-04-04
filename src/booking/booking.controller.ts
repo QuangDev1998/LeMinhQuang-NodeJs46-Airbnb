@@ -7,6 +7,7 @@ import {
   Delete,
   Put,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { CreateBookingDto, UpdateBookingDto } from './dto/booking.dto';
@@ -15,8 +16,8 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
 
 @ApiTags('DatPhong')
 @ApiBearerAuth('access-token')
-@Controller('dat-phong')
 @UseGuards(JwtAuthGuard)
+@Controller('dat-phong')
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
 
@@ -26,8 +27,8 @@ export class BookingController {
   }
 
   @Get(':id')
-  getById(@Param('id') id: number) {
-    return this.bookingService.getById(+id);
+  getById(@Param('id', ParseIntPipe) id: number) {
+    return this.bookingService.getById(id);
   }
 
   @Post()
@@ -36,17 +37,17 @@ export class BookingController {
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() dto: UpdateBookingDto) {
-    return this.bookingService.update(+id, dto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateBookingDto) {
+    return this.bookingService.update(id, dto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.bookingService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.bookingService.remove(id);
   }
 
   @Get('lay-theo-nguoi-dung/:maNguoiDung')
-  getByUser(@Param('maNguoiDung') maNguoiDung: number) {
-    return this.bookingService.getByUser(+maNguoiDung);
+  getByUser(@Param('maNguoiDung', ParseIntPipe) maNguoiDung: number) {
+    return this.bookingService.getByUser(maNguoiDung);
   }
 }

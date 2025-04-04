@@ -1,43 +1,61 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateBookingDto, UpdateBookingDto } from './dto/booking.dto';
+import { format } from 'date-fns-tz';
 
 @Injectable()
 export class BookingService {
   constructor(private prisma: PrismaService) {}
 
-  getAll() {
-    return this.prisma.datPhong.findMany();
+  private getDateTime() {
+    return format(new Date(), "yyyy-MM-dd'T'HH:mm:ssXXX", {
+      timeZone: 'Asia/Ho_Chi_Minh',
+    });
+  }
+
+  private response(content: any, statusCode = 200) {
+    return {
+      statusCode,
+      content,
+      dateTime: this.getDateTime(),
+    };
+  }
+
+  async getAll() {
+    const data = await this.prisma.datPhong.findMany();
+    return this.response(data);
   }
 
   async getById(id: number) {
     const booking = await this.prisma.datPhong.findUnique({ where: { id } });
     if (!booking) throw new NotFoundException('Booking không tồn tại');
-    return booking;
+    return this.response(booking);
   }
 
   async create(dto: CreateBookingDto) {
-    return this.prisma.datPhong.create({
-      data: dto,
-    });
+    const booking = await this.prisma.datPhong.create({ data: dto });
+    return this.response(booking, 201);
   }
 
   async update(id: number, dto: UpdateBookingDto) {
     await this.getById(id);
-    return this.prisma.datPhong.update({
+    const updated = await this.prisma.datPhong.update({
       where: { id },
       data: dto,
     });
+    return this.response(updated);
   }
 
   async remove(id: number) {
     await this.getById(id);
-    return this.prisma.datPhong.delete({ where: { id } });
+    const deleted = await this.prisma.datPhong.delete({ where: { id } });
+    return this.response(deleted);
   }
 
   async getByUser(maNguoiDung: number) {
-    return this.prisma.datPhong.findMany({
+    const data = await this.prisma.datPhong.findMany({
       where: { ma_nguoi_dat: maNguoiDung },
     });
+    return this.response(data);
   }
 }

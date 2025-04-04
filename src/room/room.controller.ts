@@ -7,32 +7,24 @@ import {
   Delete,
   Put,
   Query,
-  UseGuards,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { CreateRoomDto, UpdateRoomDto } from './dto/room.dto';
 import {
-  ApiBearerAuth,
   ApiBody,
   ApiConsumes,
-  ApiHeader,
   ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
-import { ResponseInterceptor } from 'src/interceptors/response.interceptor';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 
-@ApiTags('Phong')
-@ApiBearerAuth('access-token')
-@Controller('phong-thue')
-@UseInterceptors(ResponseInterceptor)
-@UseGuards(JwtAuthGuard)
+@ApiTags('Rooms')
+@Controller('rooms')
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
@@ -41,47 +33,21 @@ export class RoomController {
     return this.roomService.getAll();
   }
 
-  @Get('lay-phong-theo-vi-tri')
-  getByLocation(@Query('viTriId') viTriId: number) {
-    return this.roomService.getByLocation(+viTriId);
-  }
-
-  @Get('phan-trang-tim-kiem')
-  @ApiQuery({
-    name: 'pageIndex',
-    required: false,
-    type: Number,
-    description: 'Trang hiện tại',
-  })
-  @ApiQuery({
-    name: 'pageSize',
-    required: false,
-    type: Number,
-    description: 'Số lượng mỗi trang',
-  })
-  @ApiQuery({
-    name: 'keyword',
-    required: false,
-    type: String,
-    description: 'Từ khóa tìm kiếm',
-  })
-  async paginate(
+  @Get('search')
+  @ApiQuery({ name: 'pageIndex', required: false, type: Number })
+  @ApiQuery({ name: 'pageSize', required: false, type: Number })
+  @ApiQuery({ name: 'keyword', required: false, type: String })
+  async searchRooms(
     @Query('pageIndex') pageIndex = 1,
     @Query('pageSize') pageSize = 10,
-    @Query('keyword') keyword: string,
+    @Query('keyword') keyword?: string,
   ) {
-    const result = await this.roomService.paginate(
-      +pageIndex,
-      +pageSize,
-      keyword,
-    );
-    return {
-      statusCode: 200,
-      content: result,
-      dateTime: new Date().toLocaleString('vi-VN', {
-        timeZone: 'Asia/Ho_Chi_Minh',
-      }),
-    };
+    return this.roomService.paginate(+pageIndex, +pageSize, keyword);
+  }
+
+  @Get('by-location')
+  getByLocation(@Query('locationId') locationId: number) {
+    return this.roomService.getByLocation(+locationId);
   }
 
   @Get(':id')
@@ -104,9 +70,9 @@ export class RoomController {
     return this.roomService.remove(+id);
   }
 
-  @Post('upload-hinh-phong')
+  @Post('upload-image')
   @ApiConsumes('multipart/form-data')
-  @ApiQuery({ name: 'id', required: true, description: 'ID phòng' })
+  @ApiQuery({ name: 'id', required: true, description: 'Room ID' })
   @ApiBody({
     schema: {
       type: 'object',
@@ -118,7 +84,7 @@ export class RoomController {
       },
     },
   })
-  @ApiResponse({ status: 200, description: 'Upload thành công' })
+  @ApiResponse({ status: 200, description: 'Upload successful' })
   @UseInterceptors(
     FileInterceptor('formFile', {
       storage: diskStorage({

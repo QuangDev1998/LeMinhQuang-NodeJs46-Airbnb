@@ -1,3 +1,4 @@
+
 import { PrismaClient } from '@prisma/client';
 import { locations, users, rooms, bookings, comments } from './data';
 import * as bcrypt from 'bcryptjs';

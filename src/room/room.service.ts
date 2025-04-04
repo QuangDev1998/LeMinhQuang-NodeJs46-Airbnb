@@ -31,21 +31,12 @@ export class RoomService {
   async remove(id: number) {
     await this.getById(id);
 
-    await this.prisma.datPhong.deleteMany({
-      where: { ma_phong: id },
-    });
+    await this.prisma.datPhong.deleteMany({ where: { ma_phong: id } });
+    await this.prisma.binhLuan.deleteMany({ where: { ma_cong_viec: id } });
 
-    await this.prisma.binhLuan.deleteMany({
-      where: { ma_cong_viec: id },
-    });
+    await this.prisma.phong.delete({ where: { id } });
 
-    await this.prisma.phong.delete({
-      where: { id },
-    });
-
-    return {
-      message: `Xóa phòng có id = ${id} thành công`,
-    };
+    return { message: `Xóa phòng có id = ${id} thành công` };
   }
 
   async paginate(pageIndex: number, pageSize: number, keyword?: string) {
@@ -60,11 +51,7 @@ export class RoomService {
       : {};
 
     const [rooms, total] = await Promise.all([
-      this.prisma.phong.findMany({
-        where,
-        skip,
-        take: pageSize,
-      }),
+      this.prisma.phong.findMany({ where, skip, take: pageSize }),
       this.prisma.phong.count({ where }),
     ]);
 
@@ -77,9 +64,7 @@ export class RoomService {
   }
 
   getByLocation(viTriId: number) {
-    return this.prisma.phong.findMany({
-      where: { vi_tri_id: viTriId },
-    });
+    return this.prisma.phong.findMany({ where: { vi_tri_id: viTriId } });
   }
 
   async uploadImage(id: number, filePath: string) {

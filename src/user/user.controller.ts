@@ -21,6 +21,7 @@ import { extname } from 'path';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
 import { Request } from 'express';
+
 @ApiTags('NguoiDung')
 @ApiBearerAuth('access-token')
 @Controller('users')
@@ -41,13 +42,7 @@ export class UserController {
     return this.userService.getPaging(pageIndex, pageSize, keyword);
   }
 
-  @Get('/search/:TenNguoiDung')
-  search(@Param('TenNguoiDung') name: string) {
-    return this.userService.search(name);
-  }
-
   @Get(':id')
-  @ApiBearerAuth('access-token')
   getById(@Param('id', ParseIntPipe) id: number) {
     return this.userService.getById(id);
   }
@@ -80,7 +75,6 @@ export class UserController {
       }),
     }),
   )
-  @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -93,11 +87,8 @@ export class UserController {
       },
     },
   })
-  async uploadAvatar(
-    @UploadedFile() file: Express.Multer.File,
-    @Req() req: Request,
-  ) {
+  uploadAvatar(@UploadedFile() file: Express.Multer.File, @Req() req: Request) {
     const filePath = `uploads/${file.filename}`;
-    return this.userService.uploadAvatar(req.user.id, filePath);
+    return this.userService.uploadAvatar(req.user['id'], filePath);
   }
 }

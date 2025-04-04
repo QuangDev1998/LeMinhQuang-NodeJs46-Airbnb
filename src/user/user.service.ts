@@ -28,13 +28,6 @@ export class UserService {
     return this.response(user);
   }
 
-  async search(name: string) {
-    const data = await this.prisma.nguoiDung.findMany({
-      where: { name: { contains: name } },
-    });
-    return this.response(data);
-  }
-
   async getPaging(pageIndex = 1, pageSize = 10, keyword = '') {
     const page = Number(pageIndex);
     const size = Number(pageSize);
@@ -53,7 +46,7 @@ export class UserService {
       pageIndex: page,
       pageSize: size,
       totalRow,
-      keywords: keyword ? `Name LIKE N'%${keyword}%'` : null,
+      keywords: keyword ? `name LIKE '%${keyword}%'` : null,
       data,
     });
   }
@@ -65,7 +58,7 @@ export class UserService {
         email: dto.email,
         pass_word: dto.password,
         phone: dto.phone ?? '',
-        birth_day: dto.birthday ?? '',
+        birth_day: dto.birthday ? new Date(dto.birthday) : null,
         gender: dto.gender ? 'male' : 'female',
         role: dto.role ?? 'USER',
       },
@@ -80,7 +73,7 @@ export class UserService {
         name: dto.name,
         email: dto.email,
         phone: dto.phone ?? '',
-        birth_day: dto.birthday ?? '',
+        birth_day: dto.birthday ? new Date(dto.birthday) : null,
         gender: dto.gender ? 'male' : 'female',
         role: dto.role ?? 'USER',
       },

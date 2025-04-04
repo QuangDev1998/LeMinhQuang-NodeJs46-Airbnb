@@ -13,12 +13,12 @@ model NguoiDung {
   email     String     @unique
   pass_word String
   phone     String
-  birth_day String
+  birth_day DateTime?
   gender    String
   role      String
   avatar    String?
-  DatPhong  DatPhong[]
   BinhLuan  BinhLuan[]
+  DatPhong  DatPhong[]
 }
 
 model ViTri {
@@ -50,9 +50,11 @@ model Phong {
   ban_ui    Boolean
   hinh_anh  String
   vi_tri_id Int
-  ViTri     ViTri      @relation(fields: [vi_tri_id], references: [id])
-  DatPhong  DatPhong[]
   BinhLuan  BinhLuan[]
+  DatPhong  DatPhong[]
+  ViTri     ViTri      @relation(fields: [vi_tri_id], references: [id])
+
+  @@index([vi_tri_id], map: "Phong_vi_tri_id_fkey")
 }
 
 model DatPhong {
@@ -64,6 +66,9 @@ model DatPhong {
   ma_nguoi_dat   Int
   NguoiDung      NguoiDung @relation(fields: [ma_nguoi_dat], references: [id])
   Phong          Phong     @relation(fields: [ma_phong], references: [id])
+
+  @@index([ma_nguoi_dat], map: "DatPhong_ma_nguoi_dat_fkey")
+  @@index([ma_phong], map: "DatPhong_ma_phong_fkey")
 }
 
 model BinhLuan {
@@ -73,6 +78,9 @@ model BinhLuan {
   ngay_binh_luan     DateTime
   noi_dung           String
   sao_binh_luan      Int
-  NguoiDung          NguoiDung @relation(fields: [ma_nguoi_binh_luan], references: [id])
   Phong              Phong     @relation(fields: [ma_cong_viec], references: [id])
+  NguoiDung          NguoiDung @relation(fields: [ma_nguoi_binh_luan], references: [id])
+
+  @@index([ma_cong_viec], map: "BinhLuan_ma_cong_viec_fkey")
+  @@index([ma_nguoi_binh_luan], map: "BinhLuan_ma_nguoi_binh_luan_fkey")
 }

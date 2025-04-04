@@ -18,7 +18,6 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
-  ApiOperation,
   ApiQuery,
   ApiResponse,
   ApiTags,
@@ -29,9 +28,7 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 
 @ApiTags('ViTri')
-@ApiBearerAuth('access-token')
 @Controller('vi-tri')
-@UseGuards(JwtAuthGuard)
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}
 
