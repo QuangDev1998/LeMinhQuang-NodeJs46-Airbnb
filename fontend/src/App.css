@@ -1,0 +1,85 @@
+.container {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.text-primary {
+  color: rgb(254, 107, 110);
+}
+.text-primary:hover {
+  color: rgb(254, 107, 110);
+}
+
+.text-secondary {
+  color: rgb(158, 62, 78);
+}
+.text-secondary:hover {
+  color: rgb(158, 62, 78);
+}
+
+.bg-primary {
+  background-color: rgb(254, 107, 110);
+}
+
+.bg-secondary {
+  background-color: rgb(158, 62, 78);
+}
+
+.button-primary {
+  padding: 8px 12px;
+  background-color: rgb(254, 107, 110);
+  border: solid;
+  border-width: 2px;
+  border-radius: 8px;
+  color: white;
+  transition: 0.3s;
+}
+.button-primary:hover {
+  opacity: 80%;
+}
+
+.button-outline-primary {
+  padding: 4px 8px;
+  background-color: white;
+  border: solid;
+  border-color: rgb(254, 107, 110);
+  border-width: 2px;
+  border-radius: 8px;
+  color: rgb(254, 107, 110);
+  transition: 0.3s;
+}
+.button-outline-primary:hover {
+  background-color: rgb(254, 107, 110);
+  color: white;
+  border-color: none;
+}
+
+.button-secondary {
+  padding: 4px 8px;
+  background-color: rgb(158, 62, 78);
+  border: solid;
+  border-width: 2px;
+  border-radius: 8px;
+  color: white;
+  transition: 0.3s;
+}
+.button-secondary:hover {
+  opacity: 80%;
+}
+
+.ant-card {
+  display: flex !important;
+  align-items: center !important;
+  flex-direction: row !important;
+}
+
+.dark {
+  background-color: black;
+  color: white;
+  border-color: white;
+}
+
+/* đè css của react-date-range */
+.rdrMonth {
+  width: 100% !important;
+}

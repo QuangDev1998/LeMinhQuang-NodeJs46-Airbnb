@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model NguoiDung {
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String     @unique
+  pass_word String
+  phone     String
+  birth_day DateTime?
+  gender    String
+  role      String
+  avatar    String?
+  BinhLuan  BinhLuan[]
+  DatPhong  DatPhong[]
+}
+
+model ViTri {
+  id         Int     @id @default(autoincrement())
+  ten_vi_tri String
+  tinh_thanh String
+  quoc_gia   String
+  hinh_anh   String?
+  Phong      Phong[]
+}
+
+model Phong {
+  id        Int        @id @default(autoincrement())
+  ten_phong String
+  khach     Int
+  phong_ngu Int
+  giuong    Int
+  phong_tam Int
+  mo_ta     String
+  gia_tien  Int
+  may_giat  Boolean
+  ban_la    Boolean
+  tivi      Boolean
+  dieu_hoa  Boolean
+  wifi      Boolean
+  bep       Boolean
+  do_xe     Boolean
+  ho_boi    Boolean
+  ban_ui    Boolean
+  hinh_anh  String
+  vi_tri_id Int
+  BinhLuan  BinhLuan[]
+  DatPhong  DatPhong[]
+  ViTri     ViTri      @relation(fields: [vi_tri_id], references: [id])
+
+  @@index([vi_tri_id], map: "Phong_vi_tri_id_fkey")
+}
+
+model DatPhong {
+  id             Int       @id @default(autoincrement())
+  ma_phong       Int
+  ngay_den       DateTime
+  ngay_di        DateTime
+  so_luong_khach Int
+  ma_nguoi_dat   Int
+  NguoiDung      NguoiDung @relation(fields: [ma_nguoi_dat], references: [id])
+  Phong          Phong     @relation(fields: [ma_phong], references: [id])
+
+  @@index([ma_nguoi_dat], map: "DatPhong_ma_nguoi_dat_fkey")
+  @@index([ma_phong], map: "DatPhong_ma_phong_fkey")
+}
+
+model BinhLuan {
+  id                 Int       @id @default(autoincrement())
+  ma_cong_viec       Int
+  ma_nguoi_binh_luan Int
+  ngay_binh_luan     DateTime
+  noi_dung           String
+  sao_binh_luan      Int
+  Phong              Phong     @relation(fields: [ma_cong_viec], references: [id])
+  NguoiDung          NguoiDung @relation(fields: [ma_nguoi_binh_luan], references: [id])
+
+  @@index([ma_cong_viec], map: "BinhLuan_ma_cong_viec_fkey")
+  @@index([ma_nguoi_binh_luan], map: "BinhLuan_ma_nguoi_binh_luan_fkey")
+}
