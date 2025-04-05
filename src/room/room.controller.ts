@@ -29,8 +29,16 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
   @Get()
-  getAll() {
-    return this.roomService.getAll();
+  async getAll() {
+    const data = await this.roomService.getAll();
+    return {
+      statusCode: 200,
+      content: data,
+      message: 'Lấy danh sách phòng thành công',
+      dateTime: new Date().toLocaleString('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+      }),
+    };
   }
 
   @Get('search')
@@ -46,8 +54,16 @@ export class RoomController {
   }
 
   @Get('by-location')
-  getByLocation(@Query('locationId') locationId: number) {
-    return this.roomService.getByLocation(+locationId);
+  async getByLocation(@Query('locationId') locationId: number) {
+    const data = await this.roomService.getByLocation(+locationId);
+    return {
+      statusCode: 200,
+      content: data,
+      message: 'Lấy danh sách phòng theo vị trí thành công',
+      dateTime: new Date().toLocaleString('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+      }),
+    };
   }
 
   @Get(':id')
