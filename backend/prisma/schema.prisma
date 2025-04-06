@@ -14,7 +14,7 @@ model NguoiDung {
   pass_word String
   phone     String
   birth_day DateTime?
-  gender    String
+  gender    Boolean
   role      String
   avatar    String?
   BinhLuan  BinhLuan[]

@@ -18,6 +18,7 @@ http.interceptors.request.use(
     return config;
   },
   function (error) {
+    console.log(2);
     store.dispatch(turnOnLoading());
     return Promise.reject(error);
   }

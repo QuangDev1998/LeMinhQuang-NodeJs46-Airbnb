@@ -37,15 +37,14 @@ export class AuthService {
         pass_word: hash,
         phone: dto.phone || '',
         birth_day: dto.birth_day ? new Date(dto.birth_day) : null,
-        gender: dto.gender || '',
+        gender: dto.gender === 'true',
         role: dto.role || 'USER',
       },
     });
 
-    const tokens = this.signToken(user.id, user.email);
     return {
-      ...tokens,
-      user: this.excludePassword(user),
+      success: true,
+      message: 'Đăng ký thành công',
     };
   }
 

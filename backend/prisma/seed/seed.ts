@@ -1,4 +1,3 @@
-
 import { PrismaClient } from '@prisma/client';
 import { locations, users, rooms, bookings, comments } from './data';
 import * as bcrypt from 'bcryptjs';
@@ -6,34 +5,87 @@ import * as bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Bắt đầu seeding...');
+  // 💣 Dọn sạch database trước khi seed
+  await prisma.binhLuan.deleteMany();
+  await prisma.datPhong.deleteMany();
+  await prisma.phong.deleteMany();
+  await prisma.nguoiDung.deleteMany();
+  await prisma.viTri.deleteMany();
 
-  // Seed Location
+  console.log('🌱 Bắt đầu seeding...\n');
+
+  // ✅ Seed Locations
   await prisma.viTri.createMany({ data: locations });
-  console.log('✅ Seeded Location');
+  console.log('✅ Seeded Locations');
 
-  // Seed User (hash password)
-  for (const user of users) {
-    const hash = await bcrypt.hash(user.pass_word, 10);
+  const allLocations = await prisma.viTri.findMany();
+
+  // ✅ Seed Users (hash password + avatar)
+  for (let i = 0; i < users.length; i++) {
+    const user = users[i];
+    const hashedPassword = await bcrypt.hash(user.pass_word, 10);
     await prisma.nguoiDung.create({
-      data: { ...user, pass_word: hash },
+      data: { ...user, pass_word: hashedPassword },
     });
   }
-  console.log('✅ Seeded User');
+  console.log('✅ Seeded Users');
 
-  // Seed Room
-  await prisma.phong.createMany({ data: rooms });
-  console.log('✅ Seeded Room');
+  const allUsers = await prisma.nguoiDung.findMany();
 
-  // Seed Booking
-  await prisma.datPhong.createMany({ data: bookings });
-  console.log('✅ Seeded Booking');
+  // ✅ Seed Rooms (mapping locationName to vi_tri_id)
+  for (const room of rooms) {
+    const location = allLocations.find(
+      (loc) => loc.ten_vi_tri === room.locationName,
+    );
+    if (!location) continue;
 
-  // Seed Comment
-  await prisma.binhLuan.createMany({ data: comments });
-  console.log('✅ Seeded Comment');
+    const { locationName, ...roomData } = room;
+    await prisma.phong.create({
+      data: {
+        ...roomData,
+        vi_tri_id: location.id,
+      },
+    });
+  }
+  console.log('✅ Seeded Rooms');
 
-  console.log('🌱 Seeding hoàn tất!');
+  const allRooms = await prisma.phong.findMany();
+
+  // ✅ Seed Bookings (mapping userEmail & roomName)
+  for (const booking of bookings) {
+    const user = allUsers.find((u) => u.email === booking.userEmail);
+    const room = allRooms.find((r) => r.ten_phong === booking.roomName);
+    if (!user || !room) continue;
+
+    const { userEmail, roomName, ...bookingData } = booking;
+    await prisma.datPhong.create({
+      data: {
+        ...bookingData,
+        ma_nguoi_dat: user.id,
+        ma_phong: room.id,
+      },
+    });
+  }
+  console.log('✅ Seeded Bookings');
+
+  // ✅ Seed Comments (mapping userEmail & roomName)
+  for (const comment of comments) {
+    const user = allUsers.find((u) => u.email === comment.userEmail);
+    const room = allRooms.find((r) => r.ten_phong === comment.roomName);
+    if (!user || !room) continue;
+
+    const { userEmail, roomName, ...commentData } = comment;
+    await prisma.binhLuan.create({
+      data: {
+        ...commentData,
+        ma_nguoi_binh_luan: user.id,
+        ma_cong_viec: room.id,
+      },
+    });
+  }
+  console.log('✅ Seeded Comments');
+
+  console.log('\n🌱 Seeding hoàn tất!');
 }
 
 main()

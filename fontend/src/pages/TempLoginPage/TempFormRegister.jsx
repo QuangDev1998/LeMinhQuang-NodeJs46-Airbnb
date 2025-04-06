@@ -10,21 +10,19 @@ export default function TempFormRegister({ onRegisterSuccess }) {
   const [form] = Form.useForm();
   // Hàm xử lý khi người dùng gửi form
   const handleSubmit = async (values) => {
-    const { name, email, password, phone, birthday, gender } = values;
+    const { name, email, pass_word, phone, birthday, gender } = values;
     // Chuyển đổi giá trị giới tính cho API (true cho nam, false cho nữ)
     const genderValue =
       gender === "male" ? true : gender === "female" ? false : null;
 
     // Dữ liệu gửi lên API
     const data = {
-      id: 0,
       name: name,
       email: email,
-      password: password,
       phone: phone,
-      birthday: birthday.format("YYYY-MM-DD"),
+      birthday: birthday,
       gender: genderValue,
-      role: "user",
+      pass_word: pass_word,
     };
     authServices
       .register(data)

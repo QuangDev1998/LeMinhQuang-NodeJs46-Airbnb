@@ -59,7 +59,7 @@ export class UserService {
         pass_word: dto.password,
         phone: dto.phone ?? '',
         birth_day: dto.birthday ? new Date(dto.birthday) : null,
-        gender: dto.gender ? 'male' : 'female',
+        gender: dto.gender || false,
         role: dto.role ?? 'USER',
       },
     });
@@ -74,7 +74,7 @@ export class UserService {
         email: dto.email,
         phone: dto.phone ?? '',
         birth_day: dto.birthday ? new Date(dto.birthday) : null,
-        gender: dto.gender ? 'male' : 'female',
+        gender: dto.gender,
         role: dto.role ?? 'USER',
       },
     });

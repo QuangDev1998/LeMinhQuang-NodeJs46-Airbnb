@@ -29,7 +29,7 @@ export class SignupDto {
 
   @IsOptional()
   @IsString()
-  gender?: string;
+  gender: 'true' | 'false';
 
   @IsOptional()
   @IsString()

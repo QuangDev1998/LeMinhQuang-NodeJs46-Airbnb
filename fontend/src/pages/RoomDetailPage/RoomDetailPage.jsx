@@ -9,6 +9,7 @@ import InfoRoomRight from "./InfoRoomRight";
 import Comment from "./Comment";
 import ModalCalendar from "./ModalCalendar";
 import { checkIsBookedAction } from "../../redux/thunks/bookingThunks";
+import { ro } from "date-fns/locale";
 
 export default function RoomDetailPage() {
   const { infoRoom } = useSelector((state) => state.detailRoomSlice);
@@ -17,10 +18,11 @@ export default function RoomDetailPage() {
   const params = useParams();
   const idRoom = params.id;
   const { themeMode } = useSelector((state) => state.darkModeSlice);
-
   useEffect(() => {
     if (idRoom) {
-      dispatch(fetchDetailRoomAction(idRoom)).then((result) => {
+      const numericIdRoom = Number(idRoom); // 👈 chuyển idRoom sang số
+      dispatch(fetchDetailRoomAction(numericIdRoom)).then((result) => {
+        console.log(result);
         const roomId = result?.payload?.id;
         if (roomId) {
           dispatch(checkIsBookedAction({ listIdBooking, idRoom: roomId }));
@@ -62,7 +64,6 @@ export default function RoomDetailPage() {
       return null;
     });
   };
-
   // Check loading
   const isLoading = !infoRoom || Object.keys(infoRoom).length === 0;
 
@@ -73,6 +74,7 @@ export default function RoomDetailPage() {
       </div>
     );
   }
+  console.log(222);
 
   return (
     <div className={`${themeMode}`}>

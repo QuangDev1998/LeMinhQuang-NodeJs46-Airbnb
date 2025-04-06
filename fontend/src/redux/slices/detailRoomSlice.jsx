@@ -14,9 +14,12 @@ const detailRoomSlice = createSlice({
   initialState,
   reducers: {
     setInfoRoomAction: (state, action) => {
+      console.log(action.payload);
       state.infoRoom = action.payload;
     },
     setListCommentAction: (state, action) => {
+      console.log(action.payload);
+
       state.listComment = action.payload;
     },
   },

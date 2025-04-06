@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client';
 
+// ========================== LOCATION ==========================
 export const locations: Prisma.ViTriCreateManyInput[] = [
   {
     ten_vi_tri: 'Hồ Chí Minh',
@@ -51,6 +52,7 @@ export const locations: Prisma.ViTriCreateManyInput[] = [
   },
 ];
 
+// ========================== USERS ==========================
 export const users: Prisma.NguoiDungCreateManyInput[] = [
   {
     name: 'Nguyễn Văn A',
@@ -58,8 +60,9 @@ export const users: Prisma.NguoiDungCreateManyInput[] = [
     pass_word: '123456',
     phone: '0123456789',
     birth_day: new Date('2000-01-01'),
-    gender: 'male',
+    gender: true,
     role: 'USER',
+    avatar: 'https://i.pravatar.cc/150?img=1',
   },
   {
     name: 'Trần Thị B',
@@ -67,8 +70,9 @@ export const users: Prisma.NguoiDungCreateManyInput[] = [
     pass_word: '123456',
     phone: '0987654321',
     birth_day: new Date('1998-05-20'),
-    gender: 'female',
-    role: 'USER',
+    gender: false,
+    role: 'CHU_NHA',
+    avatar: 'https://i.pravatar.cc/150?img=2',
   },
   {
     name: 'Admin C',
@@ -76,44 +80,95 @@ export const users: Prisma.NguoiDungCreateManyInput[] = [
     pass_word: 'admin123',
     phone: '0909090909',
     birth_day: new Date('1995-07-15'),
-    gender: 'male',
+    gender: true,
     role: 'ADMIN',
+    avatar: 'https://i.pravatar.cc/150?img=3',
+  },
+  {
+    name: 'Phạm Minh D',
+    email: 'd@gmail.com',
+    pass_word: '123456',
+    phone: '0911111111',
+    birth_day: new Date('1997-09-12'),
+    gender: true,
+    role: 'CHU_NHA',
+    avatar: 'https://i.pravatar.cc/150?img=4',
+  },
+  {
+    name: 'Lê Thị E',
+    email: 'e@gmail.com',
+    pass_word: '123456',
+    phone: '0933333333',
+    birth_day: new Date('1999-11-22'),
+    gender: false,
+    role: 'USER',
+    avatar: 'https://i.pravatar.cc/150?img=5',
+  },
+  {
+    name: 'Admin Trần Văn F',
+    email: 'f@gmail.com',
+    pass_word: 'admin123',
+    phone: '0966666666',
+    birth_day: new Date('1992-03-18'),
+    gender: true,
+    role: 'ADMIN',
+    avatar: 'https://i.pravatar.cc/150?img=6',
   },
 ];
 
-export const rooms: Prisma.PhongCreateManyInput[] = [];
+// ========================== ROOMS ==========================
+// Gán tên location vào room thay vì vi_tri_id để mapping trong seed.ts
+export const rooms: (Omit<Prisma.PhongCreateManyInput, 'vi_tri_id'> & {
+  locationName: string;
+})[] = [];
 
-for (let locationId = 1; locationId <= 8; locationId++) {
-  for (let i = 1; i <= 10; i++) {
-    rooms.push({
-      ten_phong: `Phòng ${i} tại Location ${locationId}`,
-      khach: Math.floor(Math.random() * 6) + 1,
-      phong_ngu: Math.floor(Math.random() * 3) + 1,
-      giuong: Math.floor(Math.random() * 3) + 1,
-      phong_tam: Math.floor(Math.random() * 2) + 1,
-      mo_ta: `Phòng đẹp số ${i} tại địa điểm ${locationId}`,
-      gia_tien: Math.floor(Math.random() * 1200000) + 300000,
-      may_giat: Math.random() > 0.5,
-      ban_la: Math.random() > 0.5,
-      tivi: Math.random() > 0.5,
-      dieu_hoa: Math.random() > 0.5,
-      wifi: true,
-      bep: Math.random() > 0.5,
-      do_xe: Math.random() > 0.5,
-      ho_boi: Math.random() > 0.5,
-      ban_ui: Math.random() > 0.5,
-      hinh_anh: `https://picsum.photos/id/${200 + (locationId - 1) * 10 + i}/300/200`,
-      vi_tri_id: locationId,
-    });
-  }
+for (let i = 0; i < 80; i++) {
+  const locationIndex = i % locations.length;
+  const locationName = locations[locationIndex].ten_vi_tri;
+
+  rooms.push({
+    ten_phong: `Phòng ${i + 1} tại ${locationName}`,
+    khach: Math.floor(Math.random() * 6) + 1,
+    phong_ngu: Math.floor(Math.random() * 3) + 1,
+    giuong: Math.floor(Math.random() * 3) + 1,
+    phong_tam: Math.floor(Math.random() * 2) + 1,
+    mo_ta: `Phòng đẹp số ${i + 1} tại ${locationName}`,
+    gia_tien: Math.floor(Math.random() * 1200000) + 300000,
+    may_giat: Math.random() > 0.5,
+    ban_la: Math.random() > 0.5,
+    tivi: Math.random() > 0.5,
+    dieu_hoa: Math.random() > 0.5,
+    wifi: true,
+    bep: Math.random() > 0.5,
+    do_xe: Math.random() > 0.5,
+    ho_boi: Math.random() > 0.5,
+    ban_ui: Math.random() > 0.5,
+    hinh_anh: `https://picsum.photos/id/${200 + i}/300/200`,
+    locationName,
+  });
 }
 
-export const bookings: Prisma.DatPhongCreateManyInput[] = [];
-export const comments: Prisma.BinhLuanCreateManyInput[] = [];
+// ========================== BOOKINGS & COMMENTS ==========================
+// Gán bằng email + room name → sẽ mapping id trong seed.ts
+export const bookings: (Omit<
+  Prisma.DatPhongCreateManyInput,
+  'ma_phong' | 'ma_nguoi_dat'
+> & {
+  roomName: string;
+  userEmail: string;
+})[] = [];
 
-for (let i = 1; i <= 100; i++) {
-  const ma_phong = (i % 80) + 1;
-  const ma_nguoi_dat = (i % 3) + 1;
+export const comments: (Omit<
+  Prisma.BinhLuanCreateManyInput,
+  'ma_cong_viec' | 'ma_nguoi_binh_luan'
+> & {
+  roomName: string;
+  userEmail: string;
+})[] = [];
+
+for (let i = 0; i < 100; i++) {
+  const room = rooms[i % rooms.length];
+  const user = users[i % users.length];
   const startDate = new Date(
     2025,
     Math.floor(Math.random() * 12),
@@ -123,18 +178,18 @@ for (let i = 1; i <= 100; i++) {
   endDate.setDate(startDate.getDate() + Math.floor(Math.random() * 5) + 1);
 
   bookings.push({
-    ma_phong,
+    roomName: room.ten_phong,
+    userEmail: user.email,
     ngay_den: startDate,
     ngay_di: endDate,
     so_luong_khach: Math.floor(Math.random() * 4) + 1,
-    ma_nguoi_dat,
   });
 
   comments.push({
-    ma_cong_viec: ma_phong,
-    ma_nguoi_binh_luan: ma_nguoi_dat,
-    ngay_binh_luan: new Date(endDate),
-    noi_dung: `Phòng số ${ma_phong} rất tuyệt vời!`,
+    roomName: room.ten_phong,
+    userEmail: user.email,
+    ngay_binh_luan: endDate,
+    noi_dung: `Phòng "${room.ten_phong}" rất tuyệt vời!`,
     sao_binh_luan: Math.floor(Math.random() * 5) + 1,
   });
 }
