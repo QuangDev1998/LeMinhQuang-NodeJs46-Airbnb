@@ -33,7 +33,18 @@ export class BookingService {
   }
 
   async create(dto: CreateBookingDto) {
-    const booking = await this.prisma.datPhong.create({ data: dto });
+    console.log('DTO nhận vào:', dto);
+
+    const booking = await this.prisma.datPhong.create({
+      data: {
+        ma_phong: dto.ma_phong,
+        ngay_den: new Date(dto.ngay_den),
+        ngay_di: new Date(dto.ngay_di),
+        so_luong_khach: dto.so_luong_khach,
+        ma_nguoi_dat: dto.ma_nguoi_dat,
+      },
+    });
+
     return this.response(booking, 201);
   }
 

@@ -19,8 +19,8 @@ export let viTriServices = {
       `/vi-tri/phan-trang-tim-kiem?pageIndex=${pageIndex}&pageSize=${pageSize}&keyword=${tinhThanh}`
     ),
   getViTriInfo: (id) => http.get(`/vi-tri/${id}`),
-  editViTri: (id, viTriData, tokenBearer) =>
-    http.put(`/vi-tri/${id}`, viTriData, {
+  editViTri: (viTriData, tokenBearer) =>
+    http.put(`/vi-tri`, viTriData, {
       headers: { token: tokenBearer },
     }),
 };

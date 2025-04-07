@@ -1,7 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { format } from 'date-fns-tz';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class UserService {
@@ -52,18 +57,32 @@ export class UserService {
   }
 
   async create(dto: CreateUserDto) {
-    const user = await this.prisma.nguoiDung.create({
-      data: {
-        name: dto.name,
-        email: dto.email,
-        pass_word: dto.password,
-        phone: dto.phone ?? '',
-        birth_day: dto.birthday ? new Date(dto.birthday) : null,
-        gender: dto.gender || false,
-        role: dto.role ?? 'USER',
-      },
-    });
-    return this.response(user, 201);
+    try {
+      const user = await this.prisma.nguoiDung.create({
+        data: {
+          name: dto.name,
+          email: dto.email,
+          pass_word: dto.password,
+          phone: dto.phone ?? '',
+          birth_day: dto.birthday ? new Date(dto.birthday) : null,
+          gender: dto.gender || false,
+          role: dto.role ?? 'USER',
+        },
+      });
+
+      return this.response(user, 201);
+    } catch (error) {
+      // Bắt lỗi trùng unique email
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new BadRequestException(
+          'Email đã tồn tại, vui lòng dùng email khác',
+        );
+      }
+      throw error;
+    }
   }
 
   async update(id: number, dto: UpdateUserDto) {
@@ -80,10 +99,23 @@ export class UserService {
     });
     return this.response(user);
   }
-
   async delete(id: number) {
-    await this.prisma.nguoiDung.delete({ where: { id } });
-    return this.response('Xóa người dùng thành công');
+    try {
+      await this.prisma.nguoiDung.delete({
+        where: { id },
+      });
+
+      return this.response('Xóa người dùng thành công');
+    } catch (error) {
+      // Bắt lỗi khi ID không tồn tại
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new NotFoundException('Người dùng không tồn tại');
+      }
+      throw error;
+    }
   }
 
   async uploadAvatar(userId: number, filePath: string) {

@@ -72,11 +72,13 @@ export class RoomController {
   }
 
   @Post()
+  @ApiBody({ type: CreateRoomDto })
   create(@Body() dto: CreateRoomDto) {
     return this.roomService.create(dto);
   }
 
   @Put(':id')
+  @ApiBody({ type: UpdateRoomDto })
   update(@Param('id') id: number, @Body() dto: UpdateRoomDto) {
     return this.roomService.update(+id, dto);
   }

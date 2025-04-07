@@ -15,6 +15,11 @@ import { message } from "antd";
 import ModalPayment from "./ModalPayment";
 import ModalReBooking from "./ModalReBooking";
 import { bookingServices } from "../../services/bookingServices";
+import {
+  createListBookedRoomAction,
+  createListIdBookingAction,
+} from "../../redux/thunks/infoUserThunks";
+import { getListIdBookingAction } from "../../redux/thunks/bookingThunks";
 
 export default function InfoRoomRight() {
   const dispatch = useDispatch();
@@ -57,22 +62,34 @@ export default function InfoRoomRight() {
   };
 
   const bookingAction = () => {
+    if (!user?.id) {
+      message.warning("Bạn chưa đăng nhập!");
+      return;
+    }
+
     const body = {
-      maPhong: infoRoom.id,
-      ngayDen: dayjs(ngayDen).add(1, "day"),
-      ngayDi: dayjs(ngayDi).add(1, "day"),
-      soLuongKhach,
-      maNguoiDung: user.id,
+      ma_phong: infoRoom.id,
+      ngay_den: dayjs(ngayDen).add(1, "day"),
+      ngay_di: dayjs(ngayDi).add(1, "day"),
+      so_luong_khach: soLuongKhach,
+      ma_nguoi_dat: user.id,
     };
+
+    console.log("📦 Body gửi đi:", body); // debug
+
     bookingServices.createBooking(body).then(() => {
       const updated = [...(listIdBooking || []), infoRoom.id];
       localStorage.setItem("LIST_ID_BOOKING", JSON.stringify(updated));
-      dispatch(setListIdBooking(updated));
+
+      // ✅ Đúng thứ tự cần cập nhật:
+      dispatch(getListIdBookingAction(user.id));
+      dispatch(createListIdBookingAction(user.id));
+      dispatch(createListBookedRoomAction(updated));
+
       dispatch(setIsModalPaymentOpen(false));
       message.success("Đặt phòng thành công");
     });
   };
-
   const tienNgay = infoRoom.giaTien * totalDay;
   dispatch(setTienTruocThue(tienNgay + 8));
 

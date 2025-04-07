@@ -7,15 +7,12 @@ import {
   Delete,
   Put,
   Query,
-  UseGuards,
   UploadedFile,
   UseInterceptors,
-  Headers,
 } from '@nestjs/common';
 import { LocationService } from './location.service';
 import { CreateLocationDto, UpdateLocationDto } from './dto/location.dto';
 import {
-  ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiQuery,
@@ -23,7 +20,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { JwtAuthGuard } from '../auth/guards/jwt.guards';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 
@@ -59,13 +55,15 @@ export class LocationController {
   }
 
   @Post()
+  @ApiBody({ type: CreateLocationDto })
   create(@Body() dto: CreateLocationDto) {
     return this.locationService.create(dto);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateLocationDto) {
-    return this.locationService.update(Number(id), dto);
+  @Put()
+  @ApiBody({ type: UpdateLocationDto })
+  update(@Body() dto: UpdateLocationDto) {
+    return this.locationService.update(dto.id, dto);
   }
 
   @Delete(':id')

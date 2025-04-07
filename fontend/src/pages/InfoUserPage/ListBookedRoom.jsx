@@ -52,10 +52,10 @@ export default function ListBookedRoom() {
   }, []);
 
   const renderTinhThanh = (id) => {
-    let index = listViTri.findIndex((viTri) => viTri.id === id);
-    if (index !== -1) {
-      return listViTri[index].tinhThanh;
-    }
+    if (!Array.isArray(listViTri)) return "Không rõ";
+
+    const index = listViTri.findIndex((viTri) => viTri.id === id);
+    return index !== -1 ? listViTri[index].tinhThanh : "Không rõ";
   };
 
   const renderDateBookRoom = (idBooking) => {
@@ -156,7 +156,7 @@ export default function ListBookedRoom() {
     );
     return currentRooms.map((room) => (
       <div className="mt-5 duration-300" key={room.id}>
-        {renderRoomInfo(room.maPhong, room.id)}
+        {renderRoomInfo(room.ma_phong, room.id)}
       </div>
     ));
   };

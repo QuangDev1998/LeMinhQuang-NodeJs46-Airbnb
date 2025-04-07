@@ -5,40 +5,55 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateLocationDto, UpdateLocationDto } from './dto/location.dto';
+import { format } from 'date-fns-tz';
 
 @Injectable()
 export class LocationService {
   constructor(private prisma: PrismaService) {}
 
+  private getDateTime() {
+    return format(new Date(), "yyyy-MM-dd'T'HH:mm:ssXXX", {
+      timeZone: 'Asia/Ho_Chi_Minh',
+    });
+  }
+
+  private response(content: any, statusCode = 200) {
+    return {
+      statusCode,
+      content,
+      dateTime: this.getDateTime(),
+    };
+  }
+
   async getAll() {
-    return this.prisma.viTri.findMany();
+    const data = await this.prisma.viTri.findMany();
+    return this.response(data);
   }
 
   async getById(id: number) {
-    const location = await this.prisma.viTri.findUnique({
-      where: { id },
-    });
+    const location = await this.prisma.viTri.findUnique({ where: { id } });
     if (!location) throw new NotFoundException('ID không hợp lệ');
-    return location;
+    return this.response(location);
   }
 
   async create(dto: CreateLocationDto) {
-    return this.prisma.viTri.create({
-      data: dto,
-    });
+    const created = await this.prisma.viTri.create({ data: dto });
+    return this.response(created, 201);
   }
 
   async update(id: number, dto: UpdateLocationDto) {
     await this.getById(id);
-    return this.prisma.viTri.update({
+    const updated = await this.prisma.viTri.update({
       where: { id },
       data: dto,
     });
+    return this.response(updated);
   }
 
   async remove(id: number) {
     await this.getById(id);
-    return this.prisma.viTri.delete({ where: { id } });
+    const deleted = await this.prisma.viTri.delete({ where: { id } });
+    return this.response(deleted);
   }
 
   async paginate(pageIndex = 1, pageSize = 10, keyword = '') {
@@ -48,54 +63,33 @@ export class LocationService {
       this.prisma.viTri.findMany({
         skip,
         take: Number(pageSize),
-        where: keyword
-          ? {
-              ten_vi_tri: {
-                contains: keyword,
-              },
-            }
-          : undefined,
+        where: keyword ? { ten_vi_tri: { contains: keyword } } : undefined,
       }),
       this.prisma.viTri.count({
-        where: keyword
-          ? {
-              ten_vi_tri: {
-                contains: keyword,
-              },
-            }
-          : undefined,
+        where: keyword ? { ten_vi_tri: { contains: keyword } } : undefined,
       }),
     ]);
 
-    return {
-      statusCode: 200,
-      content: {
-        pageIndex: Number(pageIndex),
-        pageSize: Number(pageSize),
-        totalRow,
-        keywords: keyword ? `TenViTri LIKE N'%${keyword}%'` : null,
-        data,
-      },
-      dateTime: new Date().toLocaleString('vi-VN', {
-        timeZone: 'Asia/Ho_Chi_Minh',
-      }),
-    };
+    return this.response({
+      pageIndex: Number(pageIndex),
+      pageSize: Number(pageSize),
+      totalRow,
+      keywords: keyword ? `TenViTri LIKE N'%${keyword}%'` : null,
+      data,
+    });
   }
 
   async uploadImage(id: number, filePath: string) {
-    // Kiểm tra vị trí có tồn tại
-    const viTri = await this.getById(id);
+    await this.getById(id);
 
-    // Cập nhật hình ảnh vào DB
-    const updatedViTri = await this.prisma.viTri.update({
+    const updated = await this.prisma.viTri.update({
       where: { id },
       data: { hinh_anh: filePath },
     });
 
-    // Trả về kết quả
-    return {
+    return this.response({
       message: 'Upload hình thành công',
-      data: updatedViTri,
-    };
+      data: updated,
+    });
   }
 }

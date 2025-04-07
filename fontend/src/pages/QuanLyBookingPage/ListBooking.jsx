@@ -17,7 +17,7 @@ export default function ListBooking({ fetchSearchBooking, valueInput }) {
   useEffect(() => {
     dispatch(fetchListBookingAction());
   }, [dispatch]);
-  // Table data
+
   const columns = [
     {
       title: "Mã đặt phòng",
@@ -27,104 +27,81 @@ export default function ListBooking({ fetchSearchBooking, valueInput }) {
     },
     {
       title: "Mã phòng",
-      dataIndex: "maPhong",
-      key: "maPhong",
-      sorter: (a, b) => a.maPhong - b.maPhong,
+      dataIndex: "ma_phong",
+      key: "ma_phong",
+      sorter: (a, b) => a.ma_phong - b.ma_phong,
     },
     {
       title: "Mã người dùng",
-      dataIndex: "maNguoiDung",
-      key: "maNguoiDung",
-      sorter: (a, b) => a.maNguoiDung - b.maNguoiDung,
+      dataIndex: "ma_nguoi_dat",
+      key: "ma_nguoi_dat",
+      sorter: (a, b) => a.ma_nguoi_dat - b.ma_nguoi_dat,
     },
-    {
-      title: "Ngày đến",
-      dataIndex: "ngayDen",
-      key: "ngayDen",
-    },
-    {
-      title: "Ngày đi",
-      dataIndex: "ngayDi",
-      key: "ngayDi",
-    },
+    { title: "Ngày đến", dataIndex: "ngay_den", key: "ngay_den" },
+    { title: "Ngày đi", dataIndex: "ngay_di", key: "ngay_di" },
     {
       title: "Số khách",
-      dataIndex: "soLuongKhach",
-      key: "soLuongKhach",
-      sorter: (a, b) => a.soLuongKhach - b.soLuongKhach,
+      dataIndex: "so_luong_khach",
+      key: "so_luong_khach",
+      sorter: (a, b) => a.so_luong_khach - b.so_luong_khach,
     },
     {
       title: "Thao tác",
       key: "action",
       fixed: "right",
-      render: (_, dataObject) => {
-        return (
-          <div>
-            <EditOutlined
-              onClick={() => {
-                dispatch(fetchBookingInfoAction(dataObject.id))
-                  .then((result) => {
-                    dispatch(setIsModalEditOpenAction(true));
-                  })
-                  .catch((err) => {
-                    console.error(err);
-                  });
-              }}
-              className=" text-2xl hover:cursor-pointer mr-2"
-            />
-            <Popconfirm
-              title="Xoá đặt phòng"
-              description="Bạn có chắc muốn xóa đặt phòng?"
-              onConfirm={() => confirm(dataObject.id)}
-              okText="Có"
-              cancelText="Không"
-              okButtonProps={{
-                danger: "danger",
-              }}
-            >
-              <DeleteOutlined className=" text-2xl hover:cursor-pointer " />
-            </Popconfirm>
-          </div>
-        );
-      },
+      render: (_, record) => (
+        <div>
+          <EditOutlined
+            onClick={() => {
+              dispatch(fetchBookingInfoAction(record.id)).then(() => {
+                dispatch(setIsModalEditOpenAction(true));
+              });
+            }}
+            className="text-2xl cursor-pointer mr-2"
+          />
+          <Popconfirm
+            title="Xoá đặt phòng"
+            description="Bạn có chắc muốn xóa đặt phòng?"
+            onConfirm={() => handleDeleteBooking(record.id)}
+            okText="Có"
+            cancelText="Không"
+            okButtonProps={{ danger: true }}
+          >
+            <DeleteOutlined className="text-2xl cursor-pointer" />
+          </Popconfirm>
+        </div>
+      ),
     },
   ];
+
   const renderListBooking = () => {
-    return listBooking.map((booking) => {
-      return {
-        key: booking.id,
-        id: booking.id,
-        maPhong: booking.maPhong,
-        ngayDen: dayjs(booking.ngayDen).format("DD/MM/YYYY"),
-        ngayDi: dayjs(booking.ngayDi).format("DD/MM/YYYY"),
-        soLuongKhach: booking.soLuongKhach,
-        maNguoiDung: booking.maNguoiDung,
-      };
-    });
+    return listBooking.map((b) => ({
+      key: b.id,
+      id: b.id,
+      ma_phong: b.ma_phong,
+      ngay_den: dayjs(b.ngay_den).format("DD/MM/YYYY"),
+      ngay_di: dayjs(b.ngay_di).format("DD/MM/YYYY"),
+      so_luong_khach: b.so_luong_khach,
+      ma_nguoi_dat: b.ma_nguoi_dat,
+    }));
   };
+
   const handleDeleteBooking = (id) => {
     bookingServices
       .deleteBooking(id)
-      .then((result) => {
+      .then(() => {
         fetchSearchBooking(valueInput);
         message.success("Xóa thành công");
       })
-      .catch((err) => {
-        console.error(err);
-        message.error("Xóa thất bại");
-      });
+      .catch(() => message.error("Xóa thất bại"));
   };
-  const confirm = (id) => {
-    handleDeleteBooking(id);
-  };
+
   return (
     <Table
       dataSource={renderListBooking()}
       columns={columns}
       scroll={{ x: "max-content" }}
-      showSorterTooltip={{
-        target: "sorter-icon",
-      }}
+      showSorterTooltip={{ target: "sorter-icon" }}
     />
   );
 }

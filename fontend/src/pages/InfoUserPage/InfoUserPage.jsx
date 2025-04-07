@@ -1,4 +1,3 @@
-import { CheckOutlined } from "@ant-design/icons";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ListBookedRoom from "./ListBookedRoom";
@@ -7,21 +6,30 @@ import {
   setIsModalUpHinhOpenAction,
 } from "../../redux/slices/infoUserSlice";
 import ModalUpHinh from "./ModalUpHinh";
-import { fetchInfoUserAction } from "../../redux/thunks/infoUserThunks";
+import {
+  createListBookedRoomAction,
+  fetchInfoUserAction,
+} from "../../redux/thunks/infoUserThunks";
 import ModalEditInfoUser from "./ModalEditInfoUser";
 import { message } from "antd";
 import { setIsModalOpen, setModalContent } from "../../redux/slices/userSlice";
+import { CheckOutlined } from "@ant-design/icons";
 
 export default function InfoUserPage() {
+  const dispatch = useDispatch();
   const idUser = useSelector((state) => state.userSlice.loginData?.user.id);
   const { infoUser } = useSelector((state) => state.infoUserSlice);
-  const dispatch = useDispatch();
   const { themeMode } = useSelector((state) => state.darkModeSlice);
+  const { listIdBooking } = useSelector((state) => state.bookingSlice); // 👈 thêm vào
+
+  // 🔁 Tự động fetch lại info user khi user hoặc listIdBooking thay đổi
   useEffect(() => {
     if (idUser) {
       dispatch(fetchInfoUserAction(idUser));
+      dispatch(createListBookedRoomAction(listIdBooking));
     }
-  }, []);
+  }, [idUser, listIdBooking]);
+
   const renderRequireLogin = () => {
     if (!idUser) {
       dispatch(setModalContent("login"));
@@ -29,6 +37,7 @@ export default function InfoUserPage() {
       message.warning("Đăng nhập để xem thông tin cá nhân");
     }
   };
+
   return (
     <div className={`${themeMode}`}>
       <div>
@@ -44,19 +53,20 @@ export default function InfoUserPage() {
             height: "50vh",
           }}
         >
-          <div className="flex justify-center  z-10">
+          <div className="flex justify-center z-10">
             <h1 className="text-white text-2xl">
               THÔNG TIN NGƯỜI DÙNG{" "}
               <span className="text-primary">{infoUser.name}</span>
             </h1>
           </div>
           <div
-            className="absolute top-0 left-0 w-full h-full opacity-80  "
+            className="absolute top-0 left-0 w-full h-full opacity-80"
             style={{
               backgroundImage: "linear-gradient(195deg,#4c4c4c,#191919)",
             }}
           ></div>
         </div>
+
         {/* info */}
         <div className="container grid lg:flex gap-10 py-5">
           {/* info left */}
@@ -67,29 +77,22 @@ export default function InfoUserPage() {
               maxHeight: "100vh",
             }}
           >
-            <div className=" space-y-3   p-5 border-solid border rounded-md">
+            <div className="space-y-3 p-5 border-solid border rounded-md">
               {/* avatar */}
               <div>
-                {infoUser.avatar ? (
-                  <img
-                    src={infoUser.avatar}
-                    alt=""
-                    className="mx-auto h-36 w-36 object-cover rounded-full"
-                  />
-                ) : (
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png"
-                    alt=""
-                    className="mx-auto h-36 w-36 object-cover rounded-full"
-                  />
-                )}
+                <img
+                  src={
+                    infoUser.avatar ||
+                    "https://cdn-icons-png.flaticon.com/512/6596/6596121.png"
+                  }
+                  alt="avatar"
+                  className="mx-auto h-36 w-36 object-cover rounded-full"
+                />
               </div>
               <div className="w-full flex justify-center">
                 <button
                   className="button-primary my-3"
-                  onClick={() => {
-                    dispatch(setIsModalUpHinhOpenAction(true));
-                  }}
+                  onClick={() => dispatch(setIsModalUpHinhOpenAction(true))}
                 >
                   Cập nhật ảnh
                 </button>
@@ -104,21 +107,19 @@ export default function InfoUserPage() {
                     />
                     <h1 className="font-bold text-xl">Xác minh danh tính</h1>
                   </div>
-                  <p>Xác minh danh tính của bạn để nhận huy hiệu .</p>
+                  <p>Xác minh danh tính của bạn để nhận huy hiệu.</p>
                   <p>
                     <i className="fa fa-award text-primary mr-3" />
                     Chủ nhà siêu cấp
                   </p>
                   <button
                     className="mb-5 button-primary"
-                    onClick={() => {
-                      message.info("Hiện chưa có danh hiệu mới");
-                    }}
+                    onClick={() => message.info("Hiện chưa có danh hiệu mới")}
                   >
                     Nhận huy hiệu
                   </button>
                 </div>
-                {idUser ? (
+                {idUser && (
                   <div>
                     <h1 className="font-bold text-xl">ADMIN ĐÃ XÁC NHẬN</h1>
                     <ul>
@@ -130,8 +131,6 @@ export default function InfoUserPage() {
                       </li>
                     </ul>
                   </div>
-                ) : (
-                  <></>
                 )}
               </div>
             </div>
@@ -145,19 +144,17 @@ export default function InfoUserPage() {
             <p className="text-sm text-gray-500">Bắt đầu tham gia vào 2024</p>
             <button
               className="button-primary"
-              onClick={() => {
-                dispatch(setIsModalEditOpenAction(true));
-              }}
+              onClick={() => dispatch(setIsModalEditOpenAction(true))}
             >
               Chỉnh sửa hồ sơ
             </button>
-            {/* list phòng đã book */}
+            {/* danh sách phòng đã book */}
             <ListBookedRoom />
           </div>
         </div>
-        {/* modal up avatar */}
+
+        {/* modals */}
         <ModalUpHinh idUser={idUser} />
-        {/* modal edit */}
         <ModalEditInfoUser />
       </div>
 
