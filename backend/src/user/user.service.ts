@@ -7,10 +7,15 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { format } from 'date-fns-tz';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { ConfigService } from '@nestjs/config';
+import { v2 as cloudinary } from 'cloudinary';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
+  ) {}
 
   private getDateTime() {
     return format(new Date(), "yyyy-MM-dd'T'HH:mm:ssXXX", {
@@ -72,7 +77,6 @@ export class UserService {
 
       return this.response(user, 201);
     } catch (error) {
-      // Bắt lỗi trùng unique email
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code === 'P2002'
@@ -99,6 +103,7 @@ export class UserService {
     });
     return this.response(user);
   }
+
   async delete(id: number) {
     try {
       await this.prisma.nguoiDung.delete({
@@ -107,7 +112,6 @@ export class UserService {
 
       return this.response('Xóa người dùng thành công');
     } catch (error) {
-      // Bắt lỗi khi ID không tồn tại
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code === 'P2025'
@@ -118,14 +122,40 @@ export class UserService {
     }
   }
 
-  async uploadAvatar(userId: number, filePath: string) {
+  // ✅ Hàm mới: upload ảnh lên Cloudinary
+  async uploadAvatar(userId: number, file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('Không tìm thấy file ảnh để upload');
+    }
+
+    // Config Cloudinary
+    cloudinary.config({
+      cloud_name: this.configService.get('CLOUDINARY_CLOUD_NAME'),
+      api_key: this.configService.get('CLOUDINARY_API_KEY'),
+      api_secret: this.configService.get('CLOUDINARY_API_SECRET'),
+    });
+
+    const uploadResult: any = await new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          { folder: 'avatars', format: 'png' },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          },
+        )
+        .end(file.buffer);
+    });
+
+    // Cập nhật DB
     await this.prisma.nguoiDung.update({
       where: { id: userId },
-      data: { avatar: filePath },
+      data: { avatar: uploadResult.secure_url },
     });
+
     return this.response({
       message: 'Upload avatar thành công',
-      avatar: filePath,
+      avatar: uploadResult.secure_url,
     });
   }
 }

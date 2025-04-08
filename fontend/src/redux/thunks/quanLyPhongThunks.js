@@ -6,7 +6,7 @@ export const fetchListPhongAction = createAsyncThunk(
   "quanLyPhongSlice/fetchListPhongAction",
   async ({ currentPage, valueInput }) => {
     const result = await phongServices.findPhong(currentPage, 10, valueInput);
-    return result.data.content; // ← Trả về object chứa { data, totalRow, pageIndex }
+    return result.data.content;
   }
 );
 

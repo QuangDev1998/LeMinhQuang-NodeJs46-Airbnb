@@ -33,8 +33,6 @@ export class BookingService {
   }
 
   async create(dto: CreateBookingDto) {
-    console.log('DTO nhận vào:', dto);
-
     const booking = await this.prisma.datPhong.create({
       data: {
         ma_phong: dto.ma_phong,

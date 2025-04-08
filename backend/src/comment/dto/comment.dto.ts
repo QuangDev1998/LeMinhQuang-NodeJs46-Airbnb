@@ -10,10 +10,10 @@ import {
 export class CreateCommentDto {
   @ApiProperty({
     example: 1,
-    description: 'Mã công việc (mã phòng cần bình luận)',
+    description: 'Mã phòng cần bình luận',
   })
   @IsInt()
-  ma_cong_viec: number;
+  ma_phong: number;
 
   @ApiProperty({
     example: 1001,

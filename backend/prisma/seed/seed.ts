@@ -79,7 +79,7 @@ async function main() {
       data: {
         ...commentData,
         ma_nguoi_binh_luan: user.id,
-        ma_cong_viec: room.id,
+        ma_phong: room.id,
       },
     });
   }

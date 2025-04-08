@@ -9,6 +9,7 @@ import {
   Query,
   UploadedFile,
   UseInterceptors,
+  BadRequestException,
 } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { CreateRoomDto, UpdateRoomDto } from './dto/room.dto';
@@ -20,8 +21,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
 
 @ApiTags('Rooms')
 @Controller('rooms')
@@ -30,10 +29,10 @@ export class RoomController {
 
   @Get()
   async getAll() {
-    const data = await this.roomService.getAll();
+    const result = await this.roomService.getAll();
     return {
       statusCode: 200,
-      content: data,
+      content: result,
       message: 'Lấy danh sách phòng thành công',
       dateTime: new Date().toLocaleString('vi-VN', {
         timeZone: 'Asia/Ho_Chi_Minh',
@@ -54,6 +53,7 @@ export class RoomController {
   }
 
   @Get('by-location')
+  @ApiQuery({ name: 'locationId', required: true, type: Number })
   async getByLocation(@Query('locationId') locationId: number) {
     const data = await this.roomService.getByLocation(+locationId);
     return {
@@ -67,24 +67,24 @@ export class RoomController {
   }
 
   @Get(':id')
-  getById(@Param('id') id: number) {
+  async getById(@Param('id') id: number) {
     return this.roomService.getById(+id);
   }
 
   @Post()
   @ApiBody({ type: CreateRoomDto })
-  create(@Body() dto: CreateRoomDto) {
+  async create(@Body() dto: CreateRoomDto) {
     return this.roomService.create(dto);
   }
 
   @Put(':id')
   @ApiBody({ type: UpdateRoomDto })
-  update(@Param('id') id: number, @Body() dto: UpdateRoomDto) {
+  async update(@Param('id') id: number, @Body() dto: UpdateRoomDto) {
     return this.roomService.update(+id, dto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  async remove(@Param('id') id: number) {
     return this.roomService.remove(+id);
   }
 
@@ -102,23 +102,27 @@ export class RoomController {
       },
     },
   })
-  @ApiResponse({ status: 200, description: 'Upload successful' })
-  @UseInterceptors(
-    FileInterceptor('formFile', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, cb) => {
-          const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          cb(null, unique + extname(file.originalname));
-        },
-      }),
-    }),
-  )
-  async uploadImage(
+  @ApiResponse({
+    status: 200,
+    description: 'Upload hình ảnh phòng thành công',
+  })
+  @UseInterceptors(FileInterceptor('formFile'))
+  async uploadImageCloud(
     @Query('id') id: number,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const filePath = `uploads/${file.filename}`;
-    return this.roomService.uploadImage(+id, filePath);
+    if (!file || !file.buffer || !file.mimetype.startsWith('image/')) {
+      throw new BadRequestException('Vui lòng chọn file hình hợp lệ');
+    }
+
+    const result = await this.roomService.uploadImageCloud(+id, file);
+    return {
+      statusCode: 200,
+      content: result,
+      message: 'Upload hình ảnh thành công',
+      dateTime: new Date().toLocaleString('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+      }),
+    };
   }
 }

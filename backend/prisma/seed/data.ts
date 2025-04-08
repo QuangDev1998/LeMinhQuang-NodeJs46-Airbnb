@@ -160,7 +160,7 @@ export const bookings: (Omit<
 
 export const comments: (Omit<
   Prisma.BinhLuanCreateManyInput,
-  'ma_cong_viec' | 'ma_nguoi_binh_luan'
+  'ma_phong' | 'ma_nguoi_binh_luan'
 > & {
   roomName: string;
   userEmail: string;
@@ -188,8 +188,8 @@ for (let i = 0; i < 100; i++) {
   comments.push({
     roomName: room.ten_phong,
     userEmail: user.email,
-    ngay_binh_luan: endDate,
-    noi_dung: `Phòng "${room.ten_phong}" rất tuyệt vời!`,
+    ngay_binh_luan: new Date(),
+    noi_dung: 'Nội dung gì đó',
     sao_binh_luan: Math.floor(Math.random() * 5) + 1,
   });
 }

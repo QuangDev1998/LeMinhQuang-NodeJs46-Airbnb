@@ -86,7 +86,7 @@ export default function Comment({ idRoom }) {
         <h1 className="text-xl font-bold mb-2">Bình luận</h1>
         <Select
           onChange={(value) => {
-            const clone = [...listComment];
+            const clone = Array.isArray(listComment) ? [...listComment] : [];
             if (value === "newest") clone.sort((a, b) => b.id - a.id);
             if (value === "oldest") clone.sort((a, b) => a.id - b.id);
             if (value === "highest")

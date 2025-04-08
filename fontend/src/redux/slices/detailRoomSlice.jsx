@@ -36,7 +36,7 @@ const detailRoomSlice = createSlice({
     builder.addCase(
       fetchListCommentByIdRoomAction.fulfilled,
       (state, action) => {
-        state.listComment = action.payload;
+        state.listComment = Array.isArray(action.payload) ? action.payload : [];
       }
     );
     builder.addCase(

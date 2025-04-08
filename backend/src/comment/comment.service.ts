@@ -60,9 +60,30 @@ export class CommentService {
 
   async getByRoom(maPhong: number) {
     const data = await this.prisma.binhLuan.findMany({
-      where: { ma_cong_viec: maPhong },
+      where: { ma_phong: maPhong },
+      include: {
+        NguoiDung: true,
+      },
+      orderBy: {
+        id: 'desc',
+      },
     });
-    return this.response(data);
+
+    // Map lại dữ liệu trước khi trả về
+    const mapped = data.map((c) => ({
+      id: c.id,
+      maPhong: c.ma_phong,
+      maNguoiBinhLuan: c.ma_nguoi_binh_luan,
+      tenNguoiBinhLuan: c.NguoiDung?.name || 'Ẩn danh',
+      avatar:
+        c.NguoiDung?.avatar ||
+        'https://cdn-icons-png.flaticon.com/512/6596/6596121.png',
+      noiDung: c.noi_dung,
+      saoBinhLuan: c.sao_binh_luan,
+      ngayBinhLuan: c.ngay_binh_luan,
+    }));
+
+    return this.response(mapped);
   }
 
   async findById(id: number) {

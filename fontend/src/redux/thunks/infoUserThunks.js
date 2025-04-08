@@ -32,17 +32,10 @@ export const createListBookedRoomAction = createAsyncThunk(
     const listBookedRoomClone = [];
     const result = await phongServices.getListPhong();
     const listPhong = result.data.content;
-
-    console.log("Danh sách ID phòng đã book:", listId);
-    console.log("Tổng số phòng từ API:", listPhong.length);
-
     for (let id of listId) {
       const found = listPhong.find((phong) => phong.id === Number(id));
       if (found) listBookedRoomClone.push(found);
     }
-
-    console.log("Danh sách phòng đã khớp:", listBookedRoomClone);
-
     return listBookedRoomClone;
   }
 );

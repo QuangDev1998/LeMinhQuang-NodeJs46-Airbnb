@@ -14,6 +14,6 @@ export const fetchListCommentByIdRoomAction = createAsyncThunk(
   "detailRoomSlice/fetchListCommentAction",
   async (id) => {
     const result = await binhLuanServices.getListCommentByIdRoom(id);
-    return result.data;
+    return result.data?.content || [];
   }
 );

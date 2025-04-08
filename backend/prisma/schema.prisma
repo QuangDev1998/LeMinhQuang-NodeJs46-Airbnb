@@ -73,14 +73,14 @@ model DatPhong {
 
 model BinhLuan {
   id                 Int       @id @default(autoincrement())
-  ma_cong_viec       Int
+  ma_phong           Int
   ma_nguoi_binh_luan Int
   ngay_binh_luan     DateTime
   noi_dung           String
   sao_binh_luan      Int
-  Phong              Phong     @relation(fields: [ma_cong_viec], references: [id])
+  Phong              Phong     @relation(fields: [ma_phong], references: [id])
   NguoiDung          NguoiDung @relation(fields: [ma_nguoi_binh_luan], references: [id])
 
-  @@index([ma_cong_viec], map: "BinhLuan_ma_cong_viec_fkey")
+  @@index([ma_phong], map: "BinhLuan_ma_phong_fkey")
   @@index([ma_nguoi_binh_luan], map: "BinhLuan_ma_nguoi_binh_luan_fkey")
 }

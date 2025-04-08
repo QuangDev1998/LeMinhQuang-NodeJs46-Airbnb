@@ -16,11 +16,10 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
 import { Request } from 'express';
+import { memoryStorage } from 'multer';
 
 @ApiTags('NguoiDung')
 @ApiBearerAuth('access-token')
@@ -62,17 +61,13 @@ export class UserController {
     return this.userService.delete(id);
   }
 
+  // ✅ Upload avatar lên Cloudinary
   @Post('upload-avatar')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileInterceptor('formFile', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, cb) => {
-          const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          cb(null, unique + extname(file.originalname));
-        },
-      }),
+      storage: memoryStorage(),
+      limits: { fileSize: 5 * 1024 * 1024 },
     }),
   )
   @ApiConsumes('multipart/form-data')
@@ -87,8 +82,10 @@ export class UserController {
       },
     },
   })
-  uploadAvatar(@UploadedFile() file: Express.Multer.File, @Req() req: Request) {
-    const filePath = `uploads/${file.filename}`;
-    return this.userService.uploadAvatar(req.user['id'], filePath);
+  async uploadAvatar(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: Request,
+  ) {
+    return this.userService.uploadAvatar(req.user['id'], file);
   }
 }
