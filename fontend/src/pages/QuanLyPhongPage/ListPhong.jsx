@@ -119,7 +119,6 @@ export default function ListPhong({ valueInput }) {
     },
   ];
 
-  // từ maViTri => tenViTri
   const renderTinhThanh = (id) => {
     const index = listViTri.findIndex((viTri) => viTri.id === id);
     if (index !== -1) {
@@ -159,10 +158,10 @@ export default function ListPhong({ valueInput }) {
       columns={columns}
       scroll={{ x: "max-content" }}
       pagination={{
-        total: totalRow, // total để hiện số trang
+        total: totalRow,
         defaultCurrent: 1,
         current: currentPage,
-        pageSize: 10, // Số dòng mỗi trang
+        pageSize: 10,
         onChange: handlePageChange,
       }}
     />

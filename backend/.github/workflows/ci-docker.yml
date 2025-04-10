@@ -1,0 +1,21 @@
+name: CI-DOCKER
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Đăng nhập vào Docker HUB
+        run: docker login -u leminhquangdev -p ${{ secrets.PASS_DOCKER }}
+
+      - name: Build image mới
+        run: docker build -t leminhquangdev/airbnb-backend:latest .
+
+      - name: Đẩy image lên Docker HUB
+        run: docker push leminhquangdev/airbnb-backend:latest
