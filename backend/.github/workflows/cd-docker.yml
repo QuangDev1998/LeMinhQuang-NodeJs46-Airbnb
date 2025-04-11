@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: node_46
+    runs-on: air_bnb
 
     steps:
       - name: Xóa file .env cũ

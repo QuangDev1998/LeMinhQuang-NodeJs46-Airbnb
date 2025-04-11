@@ -81,9 +81,7 @@ export class UserService {
         error instanceof PrismaClientKnownRequestError &&
         error.code === 'P2002'
       ) {
-        throw new BadRequestException(
-          'Email đã tồn tại, vui lòng dùng email khác',
-        );
+        throw new BadRequestException('Email đã tồn tại');
       }
       throw error;
     }
