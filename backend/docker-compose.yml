@@ -5,7 +5,7 @@ services:
     image: leminhquangdev/airbnb-backend:latest
     container_name: cons-airbnb-backend
     ports:
-      - '3001:3001'
+      - '3001:3000'
     env_file:
       - .env
     depends_on:

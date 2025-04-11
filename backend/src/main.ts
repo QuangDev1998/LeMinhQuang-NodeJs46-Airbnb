@@ -4,8 +4,9 @@ import { setupSwagger } from './swagger';
 import * as dotenv from 'dotenv';
 import { join } from 'path';
 import * as express from 'express';
+
 async function bootstrap() {
-  dotenv.config(); // Load biến môi trường từ .env
+  dotenv.config();
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
 
@@ -13,8 +14,10 @@ async function bootstrap() {
     origin: process.env.CLIENT_URL || '*',
     credentials: true,
   });
+
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
+
   setupSwagger(app);
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();

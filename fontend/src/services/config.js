@@ -3,7 +3,7 @@ import { store } from "../redux/store";
 import { turnOffLoading, turnOnLoading } from "../redux/slices/spinnerSlice";
 
 export const http = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: "http://localhost:3001/api",
 });
 
 // Add a request interceptor
