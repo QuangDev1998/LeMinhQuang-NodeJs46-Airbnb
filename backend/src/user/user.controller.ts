@@ -60,7 +60,6 @@ export class UserController {
   delete(@Query('id', ParseIntPipe) id: number) {
     return this.userService.delete(id);
   }
-
   // ✅ Upload avatar lên Cloudinary
   @Post('upload-avatar')
   @UseGuards(JwtAuthGuard)
