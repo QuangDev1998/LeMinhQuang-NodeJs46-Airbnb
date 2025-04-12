@@ -2,7 +2,7 @@ name: CI-DOCKER
 
 on:
   push:
-    branches: ['main']
+    branches: ["main"]
 
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
         run: docker login -u leminhquangdev -p ${{ secrets.PASS_DOCKER }}
 
       - name: Build image mới
-        run: docker build -t leminhquangdev/airbnb-backend:latest .
+        run: docker build -t leminhquangdev/airbnb-backend:latest ./backend
 
       - name: Đẩy image lên Docker HUB
         run: docker push leminhquangdev/airbnb-backend:latest
