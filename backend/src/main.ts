@@ -14,9 +14,7 @@ async function bootstrap() {
     origin: process.env.CLIENT_URL || '*',
     credentials: true,
   });
-
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
-
   setupSwagger(app);
   await app.listen(process.env.PORT || 3000);
 }
