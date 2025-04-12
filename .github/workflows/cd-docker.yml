@@ -10,6 +10,9 @@ jobs:
   build:
     runs-on: air_bnb
 
+    defaults:
+      run:
+        working-directory: ./backend
     steps:
       - name: Xóa file .env cũ
         run: sudo rm -rf .env
@@ -36,5 +39,4 @@ jobs:
         run: sudo docker image remove leminhquangdev/airbnb-backend:latest || true
 
       - name: Chạy lại docker-compose
-        working-directory: ./backend
         run: sudo docker-compose up -d
