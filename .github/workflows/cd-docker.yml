@@ -36,7 +36,5 @@ jobs:
         run: sudo docker image remove leminhquangdev/airbnb-backend:latest || true
 
       - name: Chạy lại docker-compose
-
-        run: |
-          cd backend
-          sudo docker-compose up -d
+        working-directory: ./backend
+        run: sudo docker-compose up -d
