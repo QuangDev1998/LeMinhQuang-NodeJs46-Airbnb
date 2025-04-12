@@ -10,9 +10,6 @@ jobs:
   build:
     runs-on: air_bnb
 
-    defaults:
-      run:
-        working-directory: ./backend
     steps:
       - name: Xóa file .env cũ
         run: sudo rm -rf .env
