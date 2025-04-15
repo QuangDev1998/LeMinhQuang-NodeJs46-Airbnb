@@ -122,7 +122,6 @@ export class RoomService {
       hinhAnh: uploadResult.secure_url,
     };
   }
-
   private mapRoom(room: any) {
     return {
       id: room.id,
