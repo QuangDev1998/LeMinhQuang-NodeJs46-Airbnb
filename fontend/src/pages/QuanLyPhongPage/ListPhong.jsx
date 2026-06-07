@@ -146,7 +146,7 @@ export default function ListPhong({ valueInput }) {
       })
       .catch((err) => {
         console.error(err);
-        message.err("Xóa thất bại");
+        message.error("Xóa thất bại");
       });
   };
   const confirm = (id) => {

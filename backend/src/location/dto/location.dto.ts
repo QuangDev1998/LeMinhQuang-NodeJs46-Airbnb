@@ -1,17 +1,25 @@
-import { IsOptional, IsString, IsNumber } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateLocationDto {
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   ten_vi_tri: string;
 
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   tinh_thanh: string;
 
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   quoc_gia: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
   hinh_anh: string;
 }
 

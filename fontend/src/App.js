@@ -28,12 +28,17 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const raw = localStorage.getItem("USER_LOGIN");
-    const loginData = raw ? JSON.parse(raw) : null;
-    if (loginData) {
-      dispatch(setLoginData(loginData));
+    try {
+      const raw = localStorage.getItem("USER_LOGIN");
+      const loginData = raw && raw !== "undefined" ? JSON.parse(raw) : null;
+      if (loginData) {
+        dispatch(setLoginData(loginData));
+      }
+    } catch (err) {
+      console.error("Lỗi JSON.parse USER_LOGIN:", err);
+      localStorage.removeItem("USER_LOGIN");
     }
-  }, []);
+  }, [dispatch]);
   return (
     <div>
       <Spinner />
@@ -49,10 +54,6 @@ function App() {
           <Route
             path="/rooms/:id"
             element={<Layout content={<RoomsVitri />} />}
-          />
-          <Route
-            path="/info-user"
-            element={<Layout content={<InfoUserPage />} />}
           />
           <Route
             path="/admin/QuanLySoLieu"

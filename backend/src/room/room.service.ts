@@ -7,10 +7,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateRoomDto, UpdateRoomDto } from './dto/room.dto';
 import { v2 as cloudinary } from 'cloudinary';
 import { format } from 'date-fns-tz';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RoomService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private configService: ConfigService,
+  ) {}
 
   private getDateTime() {
     return format(new Date(), "yyyy-MM-dd'T'HH:mm:ssXXX", {
@@ -49,7 +53,17 @@ export class RoomService {
 
   async remove(id: number) {
     await this.getById(id);
-    await this.prisma.datPhong.deleteMany({ where: { ma_phong: id } });
+
+    // Không cho xóa phòng khi vẫn còn đơn đặt phòng (tránh xóa nhầm dữ liệu booking)
+    const bookingCount = await this.prisma.datPhong.count({
+      where: { ma_phong: id },
+    });
+    if (bookingCount > 0) {
+      throw new BadRequestException(
+        `Không thể xóa: phòng đang có ${bookingCount} đơn đặt phòng`,
+      );
+    }
+
     await this.prisma.phong.delete({ where: { id } });
     return `Xóa phòng ID = ${id} thành công`;
   }
@@ -89,11 +103,11 @@ export class RoomService {
       throw new BadRequestException('Vui lòng chọn file hình hợp lệ');
     }
 
-    // Cloudinary config
+    // Cloudinary config (lấy từ biến môi trường, không hardcode)
     cloudinary.config({
-      cloud_name: 'leminhquang',
-      api_key: '895984712795561',
-      api_secret: 'teoCAmfCSjswWNTjpy1GYxO6OU4',
+      cloud_name: this.configService.get('CLOUDINARY_CLOUD_NAME'),
+      api_key: this.configService.get('CLOUDINARY_API_KEY'),
+      api_secret: this.configService.get('CLOUDINARY_API_SECRET'),
     });
 
     // Upload image

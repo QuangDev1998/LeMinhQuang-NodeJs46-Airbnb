@@ -1,6 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignupDto, SigninDto } from './dto/auth.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { FacebookLoginDto } from './dto/facebook-login.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')
@@ -16,5 +18,15 @@ export class AuthController {
   @Post('signin')
   signin(@Body() dto: SigninDto) {
     return this.authService.signin(dto);
+  }
+
+  @Post('refresh')
+  refresh(@Body() dto: RefreshTokenDto) {
+    return this.authService.refreshToken(dto.refreshToken);
+  }
+
+  @Post('facebook')
+  facebookLogin(@Body() dto: FacebookLoginDto) {
+    return this.authService.facebookLogin(dto.accessToken);
   }
 }

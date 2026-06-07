@@ -14,12 +14,11 @@ export default function TempFormLogin({ onLoginSuccess }) {
     authServices
       .login(values)
       .then((res) => {
-        const { access_token, user } = res.data;
+        const { access_token, refresh_token, user } = res.data;
 
-        // Lưu vào Redux + localStorage
-        const loginPayload = { user, access_token };
+        // Lưu vào Redux (setLoginData đã tự lưu localStorage)
+        const loginPayload = { user, access_token, refresh_token };
         dispatch(setLoginData(loginPayload));
-        localStorage.setItem("USER_LOGIN", JSON.stringify(loginPayload));
 
         // Load danh sách đã đặt phòng theo user.id
         dispatch(getListIdBookingAction(user.id));

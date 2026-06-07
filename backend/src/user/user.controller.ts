@@ -12,12 +12,15 @@ import {
   Req,
   ParseIntPipe,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Request } from 'express';
 import { memoryStorage } from 'multer';
 
@@ -47,16 +50,37 @@ export class UserController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth('access-token')
   create(@Body() dto: CreateUserDto) {
     return this.userService.create(dto);
   }
 
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateUserDto) {
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateUserDto,
+    @Req() req: Request,
+  ) {
+    // Chỉ chính chủ hoặc admin mới được sửa thông tin
+    const current = req.user as { id: number; role: string };
+    if (current.role !== 'ADMIN' && current.id !== id) {
+      throw new ForbiddenException('Bạn chỉ được sửa thông tin của chính mình');
+    }
+    // Người dùng thường không được tự nâng quyền
+    if (current.role !== 'ADMIN') {
+      delete dto.role;
+    }
     return this.userService.update(id, dto);
   }
 
   @Delete()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth('access-token')
   delete(@Query('id', ParseIntPipe) id: number) {
     return this.userService.delete(id);
   }

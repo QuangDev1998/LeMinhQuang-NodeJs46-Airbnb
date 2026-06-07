@@ -21,7 +21,7 @@ export default function ModalEditQLBooking({ fetchSearchBooking, valueInput }) {
     bookingServices
       .editBooking(values.id, values)
       .then(() => {
-        fetchBookingInfoAction(bookingInfo.id);
+        dispatch(fetchBookingInfoAction(bookingInfo.id));
         fetchSearchBooking(valueInput);
         dispatch(setIsModalEditOpenAction(false));
         message.success("Cập nhật thành công");

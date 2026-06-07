@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class RefreshTokenDto {
-  @ApiProperty({ description: 'Refresh token đã cấp khi đăng nhập' })
+export class FacebookLoginDto {
+  @ApiProperty({ description: 'Access token lấy được từ Facebook SDK' })
   @IsNotEmpty()
   @IsString()
-  refreshToken: string;
+  accessToken: string;
 }

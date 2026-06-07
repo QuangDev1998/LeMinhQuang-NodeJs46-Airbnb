@@ -9,6 +9,7 @@ import { format } from 'date-fns-tz';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { ConfigService } from '@nestjs/config';
 import { v2 as cloudinary } from 'cloudinary';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserService {
@@ -27,15 +28,22 @@ export class UserService {
     return { statusCode, content, dateTime: this.getDateTime(), ...extra };
   }
 
+  // Loại bỏ pass_word trước khi trả ra ngoài
+  private excludePassword<T extends { pass_word?: string }>(user: T) {
+    if (!user) return user;
+    const { pass_word, ...rest } = user;
+    return rest;
+  }
+
   async getAll() {
     const data = await this.prisma.nguoiDung.findMany();
-    return this.response(data);
+    return this.response(data.map((u) => this.excludePassword(u)));
   }
 
   async getById(id: number) {
     const user = await this.prisma.nguoiDung.findUnique({ where: { id } });
     if (!user) throw new NotFoundException('ID không hợp lệ');
-    return this.response(user);
+    return this.response(this.excludePassword(user));
   }
 
   async getPaging(pageIndex = 1, pageSize = 10, keyword = '') {
@@ -57,17 +65,18 @@ export class UserService {
       pageSize: size,
       totalRow,
       keywords: keyword ? `name LIKE '%${keyword}%'` : null,
-      data,
+      data: data.map((u) => this.excludePassword(u)),
     });
   }
 
   async create(dto: CreateUserDto) {
     try {
+      const hash = await bcrypt.hash(dto.password, 10);
       const user = await this.prisma.nguoiDung.create({
         data: {
           name: dto.name,
           email: dto.email,
-          pass_word: dto.password,
+          pass_word: hash,
           phone: dto.phone ?? '',
           birth_day: dto.birthday ? new Date(dto.birthday) : null,
           gender: dto.gender || false,
@@ -75,7 +84,7 @@ export class UserService {
         },
       });
 
-      return this.response(user, 201);
+      return this.response(this.excludePassword(user), 201);
     } catch (error) {
       if (
         error instanceof PrismaClientKnownRequestError &&
@@ -88,18 +97,21 @@ export class UserService {
   }
 
   async update(id: number, dto: UpdateUserDto) {
+    // Chỉ cập nhật các field thực sự được gửi lên (tránh ghi đè null/USER ngoài ý muốn)
+    const data: Record<string, any> = {};
+    if (dto.name !== undefined) data.name = dto.name;
+    if (dto.email !== undefined) data.email = dto.email;
+    if (dto.phone !== undefined) data.phone = dto.phone;
+    if (dto.birthday !== undefined)
+      data.birth_day = dto.birthday ? new Date(dto.birthday) : null;
+    if (dto.gender !== undefined) data.gender = dto.gender;
+    if (dto.role !== undefined) data.role = dto.role;
+
     const user = await this.prisma.nguoiDung.update({
       where: { id },
-      data: {
-        name: dto.name,
-        email: dto.email,
-        phone: dto.phone ?? '',
-        birth_day: dto.birthday ? new Date(dto.birthday) : null,
-        gender: dto.gender,
-        role: dto.role ?? 'USER',
-      },
+      data,
     });
-    return this.response(user);
+    return this.response(this.excludePassword(user));
   }
 
   async delete(id: number) {

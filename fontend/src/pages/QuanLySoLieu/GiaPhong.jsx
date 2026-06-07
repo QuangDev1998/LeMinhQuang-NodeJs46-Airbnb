@@ -24,9 +24,12 @@ Chartjs.register(
 
 export default function GiaPhong() {
   const { listGiaTien } = useSelector((state) => state.quanLySoLieuSlice);
-  const giaMax = Math.max(...listGiaTien);
-  const giaMin = Math.min(...listGiaTien);
+  const hasData = Array.isArray(listGiaTien) && listGiaTien.length > 0;
+  // Tránh Math.max/min trên mảng rỗng (trả về ±Infinity)
+  const giaMax = hasData ? Math.max(...listGiaTien) : 0;
+  const giaMin = hasData ? Math.min(...listGiaTien) : 0;
   const calculateAverage = () => {
+    if (!hasData) return 0;
     let sum = 0;
     for (let i = 0; i < listGiaTien.length; i++) {
       sum += listGiaTien[i];

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { StarFilled } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -90,8 +90,13 @@ export default function InfoRoomRight() {
       message.success("Đặt phòng thành công");
     });
   };
-  const tienNgay = infoRoom.giaTien * totalDay;
-  dispatch(setTienTruocThue(tienNgay + 8));
+  const tienNgay = (infoRoom.giaTien || 0) * totalDay;
+
+  // Cập nhật tổng tiền trước thuế khi giá phòng / số đêm thay đổi
+  // (không dispatch trực tiếp trong thân render để tránh re-render lặp)
+  useEffect(() => {
+    dispatch(setTienTruocThue(tienNgay + 8));
+  }, [tienNgay, dispatch]);
 
   return (
     <div className="basis-1/3 sticky top-0 w-full lg:h-80">

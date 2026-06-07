@@ -47,17 +47,28 @@ export default function DoanhThu() {
   const { RangePicker } = DatePicker;
   const dispatch = useDispatch();
 
-  const onChange = (date, dateString) => {
+  const onChange = (date) => {
+    // Người dùng xóa range -> reset về 0
+    if (!date || !date[0] || !date[1]) {
+      setMin(0);
+      setMax(0);
+      setAvg(0);
+      dispatch(setDonDatPhong(0));
+      dispatch(setTongDoanhThu(0));
+      return;
+    }
     let from = dayjs(date[0]).valueOf();
     let to = dayjs(date[1]).valueOf();
     let tongTienArr = calculateTongTien(from, to);
-    const min = Math.min(...tongTienArr);
-    const max = Math.max(...tongTienArr);
-    let sum = null;
+    let sum = 0;
     for (let i = 0; i < tongTienArr.length; i++) {
       sum += tongTienArr[i];
     }
-    const avg = Math.floor(sum / tongTienArr.length);
+    // Tránh Math.min/max trên mảng rỗng (±Infinity) và chia cho 0 (NaN)
+    const hasData = tongTienArr.length > 0;
+    const min = hasData ? Math.min(...tongTienArr) : 0;
+    const max = hasData ? Math.max(...tongTienArr) : 0;
+    const avg = hasData ? Math.floor(sum / tongTienArr.length) : 0;
     setMin(min);
     setMax(max);
     setAvg(avg);

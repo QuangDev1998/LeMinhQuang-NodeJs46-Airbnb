@@ -10,10 +10,12 @@ import {
   UploadedFile,
   UseInterceptors,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { CreateRoomDto, UpdateRoomDto } from './dto/room.dto';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiQuery,
@@ -21,6 +23,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @ApiTags('Rooms')
 @Controller('rooms')
@@ -72,23 +77,35 @@ export class RoomController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth('access-token')
   @ApiBody({ type: CreateRoomDto })
   async create(@Body() dto: CreateRoomDto) {
     return this.roomService.create(dto);
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth('access-token')
   @ApiBody({ type: UpdateRoomDto })
   async update(@Param('id') id: number, @Body() dto: UpdateRoomDto) {
     return this.roomService.update(+id, dto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth('access-token')
   async remove(@Param('id') id: number) {
     return this.roomService.remove(+id);
   }
 
   @Post('upload-image')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth('access-token')
   @ApiConsumes('multipart/form-data')
   @ApiQuery({ name: 'id', required: true, description: 'Room ID' })
   @ApiBody({
