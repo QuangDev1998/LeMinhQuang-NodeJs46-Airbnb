@@ -122,9 +122,30 @@ export const rooms: (Omit<Prisma.PhongCreateManyInput, 'vi_tri_id'> & {
   locationName: string;
 })[] = [];
 
+// Danh mục loại chỗ ở kiểu Airbnb
+export const ROOM_CATEGORIES = [
+  'Phòng',
+  'Hồ bơi tuyệt vời',
+  'Bãi biển',
+  'Cabin gỗ',
+  'Trang trại',
+  'Nhà nhỏ xinh',
+  'Tuyệt tác kiến trúc',
+  'Trên mặt nước',
+  'Khung cảnh tuyệt vời',
+  'Thành phố nổi tiếng',
+];
+
 for (let i = 0; i < 80; i++) {
   const locationIndex = i % locations.length;
   const locationName = locations[locationIndex].ten_vi_tri;
+  const loaiPhong = ROOM_CATEGORIES[i % ROOM_CATEGORIES.length];
+
+  // Bộ ảnh gallery ổn định cho mỗi phòng (5 ảnh)
+  const gallery = Array.from(
+    { length: 5 },
+    (_, g) => `https://picsum.photos/seed/room-${i + 1}-${g}/1200/800`,
+  );
 
   rooms.push({
     ten_phong: `Phòng ${i + 1} tại ${locationName}`,
@@ -132,7 +153,9 @@ for (let i = 0; i < 80; i++) {
     phong_ngu: Math.floor(Math.random() * 3) + 1,
     giuong: Math.floor(Math.random() * 3) + 1,
     phong_tam: Math.floor(Math.random() * 2) + 1,
-    mo_ta: `Phòng đẹp số ${i + 1} tại ${locationName}`,
+    mo_ta: `Tận hưởng kỳ nghỉ tuyệt vời tại ${loaiPhong.toLowerCase()} số ${
+      i + 1
+    } ở ${locationName}. Không gian thoáng đãng, đầy đủ tiện nghi, vị trí thuận tiện cho việc di chuyển và khám phá.`,
     gia_tien: Math.floor(Math.random() * 1200000) + 300000,
     may_giat: Math.random() > 0.5,
     ban_la: Math.random() > 0.5,
@@ -143,7 +166,9 @@ for (let i = 0; i < 80; i++) {
     do_xe: Math.random() > 0.5,
     ho_boi: Math.random() > 0.5,
     ban_ui: Math.random() > 0.5,
-    hinh_anh: `https://picsum.photos/id/${200 + i}/300/200`,
+    hinh_anh: gallery[0],
+    loai_phong: loaiPhong,
+    danh_sach_anh: JSON.stringify(gallery),
     locationName,
   });
 }

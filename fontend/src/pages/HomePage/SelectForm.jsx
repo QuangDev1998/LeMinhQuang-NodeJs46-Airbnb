@@ -157,7 +157,7 @@ export default function SelectForm({ isRoompage, handleSelectRoomByLocation }) {
         onChange={handleDateChange}
         months={1}
         minDate={new Date()}
-        rangeColors={["rgb(254, 107, 110)"]}
+        rangeColors={["#ff385c"]}
         locale={vi}
         maxDate={addDays(new Date(), 180)}
       />
@@ -169,8 +169,8 @@ export default function SelectForm({ isRoompage, handleSelectRoomByLocation }) {
     "Chọn địa điểm";
 
   return (
-    <div className={`${themeMode} mt-16 mb-10 px-2`}>
-      <div className="container w-full bg-white border rounded-lg md:rounded-full shadow-sm py-2 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-0">
+    <div className={`${themeMode} mt-8 mb-10 px-2`}>
+      <div className="container mx-auto w-full max-w-4xl grid grid-cols-1 gap-4 rounded-2xl border border-gray-200 bg-white py-3 shadow-airbnb md:grid-cols-3 md:gap-0 md:rounded-full">
         <Popover
           content={locationContent}
           trigger="click"
@@ -213,8 +213,10 @@ export default function SelectForm({ isRoompage, handleSelectRoomByLocation }) {
                 <Button
                   type="primary"
                   shape="circle"
+                  size="large"
                   icon={<SearchOutlined />}
-                  className="bg-red-500 hover:bg-red-600 text-white cursor-pointer"
+                  style={{ backgroundColor: "#ff385c", borderColor: "#ff385c" }}
+                  className="cursor-pointer text-white"
                   onClick={handleSearch}
                 />
               </div>

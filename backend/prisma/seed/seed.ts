@@ -12,6 +12,13 @@ async function main() {
   await prisma.nguoiDung.deleteMany();
   await prisma.viTri.deleteMany();
 
+  // 🔁 Reset AUTO_INCREMENT để ID luôn bắt đầu từ 1 (ổn định giữa các lần seed)
+  for (const table of ['BinhLuan', 'DatPhong', 'Phong', 'NguoiDung', 'ViTri']) {
+    await prisma.$executeRawUnsafe(
+      `ALTER TABLE \`${table}\` AUTO_INCREMENT = 1`,
+    );
+  }
+
   console.log('🌱 Bắt đầu seeding...\n');
 
   // ✅ Seed Locations

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Form, Input, message } from "antd";
+import { Form, Input, message } from "antd";
 import { authServices } from "../../services/authServices";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -25,10 +25,7 @@ export default function TempFormLogin({ onLoginSuccess }) {
 
         message.success("Đăng nhập thành công!");
 
-        // Đóng modal nếu có callback
         if (onLoginSuccess) onLoginSuccess();
-
-        // Chuyển trang nếu cần
         navigate("/");
       })
       .catch((err) => {
@@ -38,53 +35,61 @@ export default function TempFormLogin({ onLoginSuccess }) {
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold text-center mb-6">
-        Đăng nhập Airbnb
+    <div className="pt-2">
+      <h2 className="border-b border-gray-200 pb-4 text-center text-lg font-bold text-gray-900">
+        Đăng nhập hoặc đăng ký
       </h2>
 
-      <Form
-        layout="vertical"
-        name="basic"
-        onFinish={onFinish}
-        autoComplete="off"
-        initialValues={{
-          email: "admin@gmail.com",
-          pass_word: "admin123",
-        }}
-      >
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[{ required: true, message: "Vui lòng nhập email!" }]}
-        >
-          <Input placeholder="Vui lòng nhập tài khoản" />
-        </Form.Item>
+      <div className="pt-5">
+        <h3 className="mb-4 text-2xl font-semibold text-gray-900">
+          Chào mừng bạn đến với Airbnb
+        </h3>
 
-        <Form.Item
-          label="Mật khẩu"
-          name="pass_word"
-          rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
+        <Form
+          layout="vertical"
+          name="basic"
+          onFinish={onFinish}
+          autoComplete="off"
+          initialValues={{
+            email: "admin@gmail.com",
+            pass_word: "admin123",
+          }}
         >
-          <Input.Password placeholder="Vui lòng nhập mật khẩu" />
-        </Form.Item>
+          <Form.Item
+            name="email"
+            rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+          >
+            <Input size="large" placeholder="Email" />
+          </Form.Item>
 
-        <div className="flex justify-between mt-4">
-          <Button
-            className="bg-red-500 hover:bg-red-600 text-white font-medium px-6 rounded-md"
+          <Form.Item
+            name="pass_word"
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
+          >
+            <Input.Password size="large" placeholder="Mật khẩu" />
+          </Form.Item>
+
+          <button type="submit" className="button-primary mt-1 w-full">
+            Đăng nhập
+          </button>
+        </Form>
+
+        <p className="mt-4 text-center text-sm text-gray-600">
+          Chưa có tài khoản?{" "}
+          <span
+            className="cursor-pointer font-semibold text-[#ff385c] underline"
             onClick={() => dispatch(setModalContent("register"))}
           >
-            Đăng ký
-          </Button>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="bg-black hover:bg-gray-800 text-white font-medium px-6 rounded-md"
-          >
-            Đăng nhập
-          </Button>
+            Đăng ký ngay
+          </span>
+        </p>
+
+        <div className="my-5 flex items-center gap-3 text-xs text-gray-400">
+          <span className="h-px flex-1 bg-gray-200" />
+          hoặc
+          <span className="h-px flex-1 bg-gray-200" />
         </div>
-      </Form>
+      </div>
     </div>
   );
 }

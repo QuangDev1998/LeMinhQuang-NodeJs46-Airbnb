@@ -37,37 +37,27 @@ export default function Locations() {
   };
 
   return (
-    <div
-      id="locationSection"
-      className={` ${themeMode} container mx-auto px-4 sm:px-6 lg:px-8 py-10`}
-    >
-      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 text-center lg:text-left">
-        Ở bất cứ đâu
-      </h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+    <div id="locationSection" className={`${themeMode} container py-10`}>
+      <h2 className="mb-6 text-2xl font-bold sm:text-3xl">Ở bất cứ đâu</h2>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((card) => (
           <div
             data-aos="flip-right"
             data-aos-duration="1000"
             key={card.id}
-            className="aspect-[3/4] border rounded-lg shadow-md overflow-hidden 
-                   hover:shadow-xl transition duration-300 flex flex-col  "
+            className="group cursor-pointer"
             onClick={() => handleNavigate(card.id)}
           >
-            {/* Phần ảnh */}
-            <div className="h-[75%]">
+            <div className="relative aspect-[3/4] overflow-hidden rounded-2xl">
               <img
                 src={card.image}
                 alt={card.title}
-                className="w-full h-full object-cover"
+                className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
               />
-            </div>
-
-            {/* Phần nội dung */}
-            <div className="h-[25%] bg-white p-3 flex items-center justify-center text-center">
-              <h2 className="text-sm sm:text-base md:text-lg font-semibold leading-tight text-black">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              <h3 className="absolute bottom-4 left-4 right-4 text-lg font-bold leading-tight text-white">
                 {card.title}
-              </h2>
+              </h3>
             </div>
           </div>
         ))}

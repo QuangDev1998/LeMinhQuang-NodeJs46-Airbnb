@@ -4,6 +4,17 @@ export const phongServices = {
   // Lấy toàn bộ phòng
   getListPhong: () => http.get(`/rooms`),
 
+  // Lấy phòng theo loại (category). Bỏ trống / "Tất cả" => tất cả
+  getListPhongByCategory: (category) =>
+    http.get(
+      category && category !== "Tất cả"
+        ? `/rooms?category=${encodeURIComponent(category)}`
+        : `/rooms`
+    ),
+
+  // Danh mục loại chỗ ở (kèm số lượng)
+  getCategories: () => http.get(`/rooms/categories`),
+
   // Tìm kiếm và phân trang
   findPhong: (pageIndex, pageSize, keyword = "") =>
     http.get(

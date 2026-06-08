@@ -66,7 +66,7 @@ export default function ModalCalendar() {
         showSelectionPreview={true}
         moveRangeOnFirstSelection={false}
         months={1}
-        rangeColors={["rgb(254, 107, 110)"]}
+        rangeColors={["#ff385c"]}
         ranges={dateRange}
         minDate={new Date()}
         locale={vi}

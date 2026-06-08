@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { message, Modal } from "antd";
+import {
+  SearchOutlined,
+  GlobalOutlined,
+  MenuOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import TempFormLogin from "../../pages/TempLoginPage/TempFormLogin";
 import TempFormRegister from "../../pages/TempLoginPage/TempFormRegister";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -9,6 +15,7 @@ import airbnbLogo from "../../assets/image/airbnb-1.aabeefedaf30b8c7011a022cdb5a
 import { setIsModalOpen, setModalContent } from "../../redux/slices/userSlice";
 import DarkLightToggle from "../DarkLightToggle/DarkLightToggle";
 import FacebookButton from "../../pages/TempLoginPage/FacebookButton";
+
 export default function TempHeader() {
   const user = useSelector((state) => state.userSlice.loginData);
   const { isModalOpen, modalContent } = useSelector((state) => state.userSlice);
@@ -17,10 +24,9 @@ export default function TempHeader() {
   const dropdownRef = useRef(null);
   const dropdownRefMobi = useRef(null);
   const location = useLocation(); // Lấy đường dẫn hiện tại
+  const navigate = useNavigate();
   const userIconRef = useRef(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { themeMode } = useSelector((state) => state.darkModeSlice);
-  const isRoomDetailPage = location.pathname.includes("/room-detail/");
+  const [, setIsDropdownOpen] = useState(false);
   const dispatch = useDispatch();
 
   const handleLogout = () => {
@@ -32,19 +38,19 @@ export default function TempHeader() {
       window.location.href = "/";
     }, 1000);
   };
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
-        setShowDropdown(false); // Đóng dropdown trên desktop
+        setShowDropdown(false);
         setIsScrolled(true);
-        setIsDropdownOpen(false); // Đóng menu trên mobi
+        setIsDropdownOpen(false);
       } else {
         setIsScrolled(false);
       }
     };
 
     const handleClickOutside = (event) => {
-      // Xử lý cho dropdown desktop
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target) &&
@@ -53,8 +59,6 @@ export default function TempHeader() {
       ) {
         setShowDropdown(false);
       }
-
-      // Xử lý cho dropdown mobi
       if (
         dropdownRefMobi.current &&
         !dropdownRefMobi.current.contains(event.target)
@@ -63,361 +67,232 @@ export default function TempHeader() {
       }
     };
 
-    // Gắn sự kiện
     window.addEventListener("scroll", handleScroll);
     document.addEventListener("mousedown", handleClickOutside);
-
-    // Dọn dẹp sự kiện khi component unmount
     return () => {
       window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isRoomDetailPage]);
+  }, []);
 
   const handleGohome = () => {
-    window.location.href = "/";
+    navigate("/");
   };
   const handleOpenModal = (content) => {
     dispatch(setModalContent(content));
     dispatch(setIsModalOpen(true));
+    setShowDropdown(false);
   };
-
   const handleCloseModal = () => {
     dispatch(setIsModalOpen(false));
   };
   const handleScrollTo = (id) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
     }
+    setIsDropdownOpen(false);
   };
+
+  const avatarUrl = user?.user?.avatar;
 
   return (
     <header
-      className={`${themeMode} fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
-        isScrolled || isRoomDetailPage
-          ? "bg-white shadow-md h-20"
-          : "bg-transparent h-28"
-      } flex items-center pb-2`}
+      className={`fixed top-0 left-0 z-50 w-full bg-white transition-shadow duration-300 ${
+        isScrolled ? "shadow-md" : "shadow-sm border-b border-gray-100"
+      }`}
     >
-      <div className="container flex justify-center md:justify-between items-center mx-auto">
-        <a
+      <div className="container flex h-20 items-center justify-between gap-4">
+        {/* Logo */}
+        <div
           onClick={handleGohome}
-          className="flex items-center text-2xl self-center px-8 font-bold cursor-pointer"
+          className="flex shrink-0 cursor-pointer items-center gap-2"
         >
           <img
             src={airbnbLogo}
             alt="Airbnb logo"
-            className="w-10 h-8 object-contain mr-2"
+            className="h-8 w-8 object-contain"
           />
-          <span className="text-3xl text-primary">airbnb</span>
-        </a>
-
-        <ul className="items-stretch hidden space-x-3 lg:flex">
-          <li className="flex">
-            <NavLink
-              onClick={handleGohome}
-              className="flex items-center px-4 font-normal transition cursor-pointer text-primary"
-            >
-              Home
-            </NavLink>
-          </li>
-
-          {[
-            { label: "Rooms", link: "/rooms", section: null },
-            {
-              label: "List",
-              link: null,
-              section: "listSection",
-              showOnHome: true,
-            },
-            {
-              label: "Favourite",
-              link: null,
-              section: "locationSection",
-              showOnHome: true,
-            },
-            { label: "Contact", link: null, section: "contactSection" },
-          ]
-            .filter(({ showOnHome }) => {
-              // Chỉ hiển thị mục "List" và "Favourite" trên trang Home
-              if (showOnHome && window.location.pathname !== "/") {
-                return false;
-              }
-              return true;
-            })
-            .map(({ label, link, section }) => (
-              <li key={label} className="flex">
-                {themeMode === "dark" ? (
-                  link ? (
-                    <NavLink
-                      to={link}
-                      className="flex items-center px-3 font-normal transition cursor-pointer text-white hover:text-red-600"
-                    >
-                      {label}
-                    </NavLink>
-                  ) : (
-                    <a
-                      onClick={() => handleScrollTo(section)}
-                      className="flex items-center px-3 font-normal transition cursor-pointer text-white hover:text-red-600"
-                    >
-                      {label}
-                    </a>
-                  )
-                ) : link ? (
-                  <NavLink
-                    to={link}
-                    className={`flex items-center px-3 font-normal transition cursor-pointer ${
-                      isScrolled || isRoomDetailPage
-                        ? "text-black"
-                        : "text-white"
-                    } hover:text-red-600`}
-                  >
-                    {label}
-                  </NavLink>
-                ) : (
-                  <a
-                    onClick={() => handleScrollTo(section)}
-                    className={`flex items-center px-3 font-normal transition cursor-pointer ${
-                      isScrolled || isRoomDetailPage
-                        ? "text-black"
-                        : "text-white"
-                    } hover:text-red-600`}
-                  >
-                    {label}
-                  </a>
-                )}
-              </li>
-            ))}
-        </ul>
-
-        <div className="gap-3 items-center flex-shrink-0 flex px-8 relative">
-          <DarkLightToggle />
-          {user ? (
-            <>
-              <div
-                ref={userIconRef}
-                className={`w-12 h-12 rounded-full flex items-center justify-center cursor-pointer bg-gray-800 text-white transition-all duration-300 ${
-                  showDropdown ? "ring-4 ring-red-400" : "ring-2 ring-gray-300"
-                } hover:ring-4 hover:ring-red-400`}
-                onClick={() => setShowDropdown((prev) => !prev)}
-              >
-                {user.user.avatar ? (
-                  <img
-                    src={user.user.avatar}
-                    alt=""
-                    className="w-12 h-12 rounded-full"
-                  />
-                ) : (
-                  <i className="fas fa-user text-xl"></i>
-                )}
-              </div>
-              <div className="relative group cursor-pointer">
-                <p className="hidden md:block text-primary text-base uppercase truncate max-w-[70px]">
-                  {user.user.name}
-                </p>
-                <span className="absolute left-0 top-full mt-2 w-max uppercase bg-white text-primary text-sm rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {user.user.name}
-                </span>
-              </div>
-
-              {showDropdown && (
-                <div
-                  ref={dropdownRef}
-                  className="absolute right-0 mt-2 bg-white shadow-md rounded-lg overflow-hidden divide-y-2 space-y-2"
-                  style={{
-                    zIndex: 1000,
-                    width: "250px",
-                    top: "calc(100% + 8px)",
-                  }}
-                >
-                  <ul>
-                    <li className="px-4 py-2 text-black">{user.user.name}</li>
-                    <li className="px-4 truncate  text-gray-500 ">
-                      {user.user.email}
-                    </li>
-                  </ul>
-                  <ul>
-                    {location.pathname !== "/info-user" && (
-                      <li>
-                        <a
-                          href="/info-user"
-                          className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                        >
-                          To Page User
-                        </a>
-                      </li>
-                    )}
-
-                    {user.user.role === "ADMIN" ? (
-                      <li>
-                        <a
-                          href="/admin/QuanLySoLieu"
-                          className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                        >
-                          To Page Admin
-                        </a>
-                      </li>
-                    ) : (
-                      <></>
-                    )}
-
-                    <li>
-                      <button
-                        onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-100"
-                      >
-                        Sign out
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              )}
-            </>
-          ) : (
-            <>
-              <div
-                ref={userIconRef}
-                className={`w-12 h-12 rounded-full flex items-center justify-center cursor-pointer bg-gray-800 text-white transition-all duration-300 ${
-                  showDropdown ? "ring-4 ring-red-400" : "ring-2 ring-gray-300"
-                } hover:ring-4 hover:ring-red-400`}
-                onClick={() => setShowDropdown((prev) => !prev)}
-              >
-                <i className="fas fa-user text-xl"></i>
-              </div>
-              {showDropdown && (
-                <div
-                  ref={dropdownRef}
-                  className="absolute top-full mt-2 right-0 bg-white shadow-md rounded-lg overflow-hidden"
-                  style={{ zIndex: 1000, width: "200px" }}
-                >
-                  <ul>
-                    <li>
-                      <button
-                        onClick={() => handleOpenModal("login")}
-                        className="block w-full text-center px-4 py-2 text-gray-700 hover:bg-gray-100"
-                      >
-                        Đăng nhập
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => handleOpenModal("register")}
-                        className="block w-full text-center px-4 py-2 text-gray-700 hover:bg-gray-100"
-                      >
-                        Đăng ký
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              )}
-            </>
-          )}
+          <span className="hidden text-2xl font-bold tracking-tight text-[#ff385c] sm:block">
+            airbnb
+          </span>
         </div>
 
-        <div className="block lg:hidden" ref={dropdownRefMobi}>
-          <button
-            onClick={() => setIsDropdownOpen((prev) => !prev)}
-            className="text-gray-500 text-2xl focus:outline-none"
-          >
-            <i className="fa fa-align-justify"></i>
-          </button>
+        {/* Thanh tìm kiếm giữa (giống Airbnb) */}
+        <button
+          onClick={() => navigate("/rooms")}
+          className="hidden items-center gap-3 rounded-full border border-gray-200 bg-white py-2 pl-6 pr-2 text-sm font-medium shadow-sm transition hover:shadow-md md:flex"
+        >
+          <span className="text-gray-800">Địa điểm bất kỳ</span>
+          <span className="h-5 w-px bg-gray-300" />
+          <span className="text-gray-800">Tuần bất kỳ</span>
+          <span className="h-5 w-px bg-gray-300" />
+          <span className="text-gray-500">Thêm khách</span>
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#ff385c] text-white">
+            <SearchOutlined />
+          </span>
+        </button>
 
-          <div
-            className={`absolute top-full left-0 w-[100vw] text-white  overflow-hidden transform transition-transform duration-1000 ${
-              isDropdownOpen
-                ? "translate-y-0 opacity-100"
-                : "-translate-y-full opacity-0"
-            }`}
+        {/* Cụm bên phải */}
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+          <NavLink
+            to="/rooms"
+            className="hidden rounded-full px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 lg:block"
           >
-            {isDropdownOpen && (
-              <ul className="container bg-gray-700 rounded-lg">
-                {[
-                  { label: "Home", link: "/", action: null },
-                  { label: "Rooms", link: "/rooms", action: null },
-                  {
-                    label: "List",
-                    link: null,
-                    action: () => handleScrollTo("listSection"),
-                    showOnHome: true,
-                  },
-                  {
-                    label: "Favourite",
-                    link: null,
-                    action: () => handleScrollTo("locationSection"),
-                    showOnHome: true,
-                  },
-                  {
-                    label: "Contact",
-                    link: null,
-                    action: () => handleScrollTo("contactSection"),
-                  },
-                ]
-                  .filter(({ showOnHome }) => {
-                    // Chỉ hiển thị mục "List" và "Favourite" trên trang Home
-                    if (showOnHome && window.location.pathname !== "/") {
-                      return false;
-                    }
-                    return true;
-                  })
-                  .map(({ label, link, action }) => (
-                    <li
-                      key={label}
-                      className="px-6 py-3 hover:bg-gray-600 text-left border-b border-gray-600 last:border-b-0"
+            Cho thuê chỗ ở trên Airbnb
+          </NavLink>
+          <button className="hidden h-10 w-10 items-center justify-center rounded-full text-gray-700 transition hover:bg-gray-100 sm:flex">
+            <GlobalOutlined />
+          </button>
+          <DarkLightToggle />
+
+          {/* Pill profile */}
+          <div className="relative" ref={dropdownRefMobi}>
+            <button
+              ref={userIconRef}
+              onClick={() => setShowDropdown((prev) => !prev)}
+              className="flex items-center gap-3 rounded-full border border-gray-300 py-1.5 pl-3 pr-1.5 transition hover:shadow-md"
+            >
+              <MenuOutlined className="text-gray-600" />
+              <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-gray-500 text-white">
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt="avatar"
+                    className="h-8 w-8 object-cover"
+                  />
+                ) : (
+                  <UserOutlined />
+                )}
+              </span>
+            </button>
+
+            {showDropdown && (
+              <div
+                ref={dropdownRef}
+                className="absolute right-0 top-full mt-3 w-64 overflow-hidden rounded-2xl border border-gray-100 bg-white py-2 shadow-xl"
+                style={{ zIndex: 1000 }}
+              >
+                {user ? (
+                  <>
+                    <div className="px-4 py-2">
+                      <p className="truncate font-semibold text-gray-900">
+                        {user.user.name}
+                      </p>
+                      <p className="truncate text-sm text-gray-500">
+                        {user.user.email}
+                      </p>
+                    </div>
+                    <div className="my-1 h-px bg-gray-100" />
+                    {location.pathname !== "/info-user" && (
+                      <a
+                        href="/info-user"
+                        className="block px-4 py-2.5 text-sm text-gray-700 transition hover:bg-gray-100"
+                      >
+                        Trang cá nhân
+                      </a>
+                    )}
+                    {user.user.role === "ADMIN" && (
+                      <a
+                        href="/admin/QuanLySoLieu"
+                        className="block px-4 py-2.5 text-sm text-gray-700 transition hover:bg-gray-100"
+                      >
+                        Trang quản trị
+                      </a>
+                    )}
+                    <NavLink
+                      to="/rooms"
+                      onClick={() => setShowDropdown(false)}
+                      className="block px-4 py-2.5 text-sm text-gray-700 transition hover:bg-gray-100"
                     >
-                      {link ? (
-                        <NavLink
-                          to={link}
-                          className="block text-left text-red-400 font-semibold"
-                        >
-                          {label}
-                        </NavLink>
-                      ) : (
-                        <a onClick={action} className="block text-left">
-                          {label}
-                        </a>
-                      )}
-                    </li>
-                  ))}
-              </ul>
+                      Danh sách phòng
+                    </NavLink>
+                    <div className="my-1 h-px bg-gray-100" />
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full px-4 py-2.5 text-left text-sm text-gray-700 transition hover:bg-gray-100"
+                    >
+                      Đăng xuất
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => handleOpenModal("login")}
+                      className="block w-full px-4 py-2.5 text-left text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+                    >
+                      Đăng nhập
+                    </button>
+                    <button
+                      onClick={() => handleOpenModal("register")}
+                      className="block w-full px-4 py-2.5 text-left text-sm text-gray-700 transition hover:bg-gray-100"
+                    >
+                      Đăng ký
+                    </button>
+                    <div className="my-1 h-px bg-gray-100" />
+                    <NavLink
+                      to="/rooms"
+                      onClick={() => setShowDropdown(false)}
+                      className="block px-4 py-2.5 text-sm text-gray-700 transition hover:bg-gray-100"
+                    >
+                      Danh sách phòng
+                    </NavLink>
+                    <button
+                      onClick={() => handleScrollTo("contactSection")}
+                      className="block w-full px-4 py-2.5 text-left text-sm text-gray-700 transition hover:bg-gray-100"
+                    >
+                      Liên hệ
+                    </button>
+                  </>
+                )}
+              </div>
             )}
           </div>
         </div>
       </div>
-      <Modal open={isModalOpen} onCancel={handleCloseModal} footer={null}>
+
+      {/* Thanh tìm kiếm rút gọn cho mobile */}
+      <div className="border-t border-gray-100 px-4 pb-3 pt-2 md:hidden">
+        <button
+          onClick={() => navigate("/rooms")}
+          className="flex w-full items-center gap-3 rounded-full border border-gray-200 px-4 py-2.5 text-sm shadow-sm"
+        >
+          <SearchOutlined className="text-[#ff385c]" />
+          <span className="font-semibold text-gray-800">Tìm kiếm điểm đến</span>
+        </button>
+      </div>
+
+      <Modal
+        open={isModalOpen}
+        onCancel={handleCloseModal}
+        footer={null}
+        centered
+        width={420}
+      >
         {modalContent === "login" ? (
           <>
-            {/* Form đăng nhập */}
             <TempFormLogin
               onLoginSuccess={() => {
-                dispatch(setIsModalOpen(false)); // Đóng modal sau khi đăng nhập thành công
-                setShowDropdown(false); // Ẩn dropdown (nếu cần)
+                dispatch(setIsModalOpen(false));
+                setShowDropdown(false);
               }}
-              setModalContent={setModalContent} // Đổi nội dung modal nếu cần
+              setModalContent={setModalContent}
             />
-
-            {/* Nút Facebook Login nằm dưới các input */}
             <FacebookButton
               onLoginSuccess={() => {
-                dispatch(setIsModalOpen(false)); // Đóng modal sau khi đăng nhập thành công
-                setShowDropdown(false); // Ẩn dropdown
+                dispatch(setIsModalOpen(false));
+                setShowDropdown(false);
               }}
             />
           </>
         ) : (
-          <>
-            {/* Form đăng ký */}
-            <TempFormRegister
-              onRegisterSuccess={() => {
-                dispatch(setModalContent("login")); // Chuyển modal sang trạng thái đăng nhập
-                setShowDropdown(false); // Ẩn dropdown (nếu cần)
-              }}
-              setModalContent={setModalContent} // Đổi nội dung modal nếu cần
-            />
-          </>
+          <TempFormRegister
+            onRegisterSuccess={() => {
+              dispatch(setModalContent("login"));
+              setShowDropdown(false);
+            }}
+            setModalContent={setModalContent}
+          />
         )}
       </Modal>
     </header>

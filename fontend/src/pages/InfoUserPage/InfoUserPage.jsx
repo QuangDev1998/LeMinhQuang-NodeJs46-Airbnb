@@ -39,36 +39,21 @@ export default function InfoUserPage() {
   };
 
   return (
-    <div className={`${themeMode}`}>
+    <div className={`${themeMode} pt-24`}>
       <div>
-        {/* banner */}
-        <div
-          className="relative w-full flex items-center justify-center"
-          style={{
-            backgroundImage:
-              "url(https://images.unsplash.com/photo-1520769945061-0a448c463865?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80&#39)",
-            backgroundPosition: "bottom",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            height: "50vh",
-          }}
-        >
-          <div className="flex justify-center z-10">
-            <h1 className="text-white text-2xl">
-              THÔNG TIN NGƯỜI DÙNG{" "}
-              <span className="text-primary">{infoUser.name}</span>
-            </h1>
-          </div>
-          <div
-            className="absolute top-0 left-0 w-full h-full opacity-80"
-            style={{
-              backgroundImage: "linear-gradient(195deg,#4c4c4c,#191919)",
-            }}
-          ></div>
+        {/* header trang */}
+        <div className="container pt-4">
+          <h1 className="text-3xl font-bold">Hồ sơ của bạn</h1>
+          <p className="mt-1 text-gray-500">
+            Thông tin chi tiết về tài khoản{" "}
+            <span className="font-semibold text-[#ff385c]">
+              {infoUser.name}
+            </span>
+          </p>
         </div>
 
         {/* info */}
-        <div className="container grid lg:flex gap-10 py-5">
+        <div className="container grid lg:flex gap-10 py-6">
           {/* info left */}
           <div
             className="block lg:sticky top-0 basis-1/4"
@@ -77,7 +62,7 @@ export default function InfoUserPage() {
               maxHeight: "100vh",
             }}
           >
-            <div className="space-y-3 p-5 border-solid border rounded-md">
+            <div className="space-y-3 rounded-2xl border border-gray-200 p-5 shadow-airbnb">
               {/* avatar */}
               <div>
                 <img

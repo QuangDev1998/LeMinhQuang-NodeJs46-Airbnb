@@ -49,6 +49,8 @@ model Phong {
   ho_boi    Boolean
   ban_ui    Boolean
   hinh_anh  String
+  loai_phong    String  @default("Phòng")
+  danh_sach_anh String? @db.Text
   vi_tri_id Int
   BinhLuan  BinhLuan[]
   DatPhong  DatPhong[]

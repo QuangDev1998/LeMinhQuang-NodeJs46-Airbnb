@@ -33,12 +33,26 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
   @Get()
-  async getAll() {
-    const result = await this.roomService.getAll();
+  @ApiQuery({ name: 'category', required: false, type: String })
+  async getAll(@Query('category') category?: string) {
+    const result = await this.roomService.getAll(category);
     return {
       statusCode: 200,
       content: result,
       message: 'Lấy danh sách phòng thành công',
+      dateTime: new Date().toLocaleString('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+      }),
+    };
+  }
+
+  @Get('categories')
+  async getCategories() {
+    const data = await this.roomService.getCategories();
+    return {
+      statusCode: 200,
+      content: data,
+      message: 'Lấy danh mục loại chỗ ở thành công',
       dateTime: new Date().toLocaleString('vi-VN', {
         timeZone: 'Asia/Ho_Chi_Minh',
       }),

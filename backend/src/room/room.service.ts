@@ -26,9 +26,21 @@ export class RoomService {
     return { statusCode, content, dateTime: this.getDateTime(), ...extra };
   }
 
-  async getAll() {
-    const rooms = await this.prisma.phong.findMany();
+  async getAll(category?: string) {
+    const where = category && category !== 'Tất cả' ? { loai_phong: category } : {};
+    const rooms = await this.prisma.phong.findMany({ where });
     return rooms.map((room) => this.mapRoom(room));
+  }
+
+  // Danh sách loại chỗ ở kèm số lượng phòng
+  async getCategories() {
+    const grouped = await this.prisma.phong.groupBy({
+      by: ['loai_phong'],
+      _count: { _all: true },
+    });
+    return grouped
+      .map((g) => ({ loaiPhong: g.loai_phong, soLuong: g._count._all }))
+      .sort((a, b) => b.soLuong - a.soLuong);
   }
 
   async getById(id: number) {
@@ -136,11 +148,23 @@ export class RoomService {
       hinhAnh: uploadResult.secure_url,
     };
   }
+  private parseGallery(raw: any, fallback: string) {
+    if (!raw) return fallback ? [fallback] : [];
+    try {
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) && arr.length ? arr : fallback ? [fallback] : [];
+    } catch {
+      return fallback ? [fallback] : [];
+    }
+  }
+
   private mapRoom(room: any) {
     return {
       id: room.id,
       tenPhong: room.ten_phong,
       hinhAnh: room.hinh_anh,
+      danhSachAnh: this.parseGallery(room.danh_sach_anh, room.hinh_anh),
+      loaiPhong: room.loai_phong,
       giaTien: room.gia_tien,
       khach: room.khach,
       phongNgu: room.phong_ngu,
@@ -149,7 +173,13 @@ export class RoomService {
       moTa: room.mo_ta,
       wifi: room.wifi,
       mayGiat: room.may_giat,
+      banLa: room.ban_la,
+      tivi: room.tivi,
+      dieuHoa: room.dieu_hoa,
+      bep: room.bep,
+      doXe: room.do_xe,
       hoBoi: room.ho_boi,
+      banUi: room.ban_ui,
       viTriId: room.vi_tri_id,
     };
   }

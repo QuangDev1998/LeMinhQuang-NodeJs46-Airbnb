@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, DatePicker, Select, Button, message } from "antd";
+import { Form, Input, DatePicker, Select, message } from "antd";
 import { authServices } from "../../services/authServices";
 import dayjs from "dayjs";
 import { setModalContent } from "../../redux/slices/userSlice";
@@ -40,8 +40,8 @@ export default function TempFormRegister({ onRegisterSuccess }) {
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold text-center mb-6">
+    <div className="pt-2">
+      <h2 className="mb-5 border-b border-gray-200 pb-4 text-center text-lg font-bold text-gray-900">
         Đăng ký tài khoản Airbnb
       </h2>
       <Form
@@ -184,14 +184,20 @@ export default function TempFormRegister({ onRegisterSuccess }) {
 
         {/* Nút gửi */}
         <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold h-10 rounded-md"
-          >
+          <button type="submit" className="button-primary w-full">
             Đăng ký
-          </Button>
+          </button>
         </Form.Item>
+
+        <p className="text-center text-sm text-gray-600">
+          Đã có tài khoản?{" "}
+          <span
+            className="cursor-pointer font-semibold text-[#ff385c] underline"
+            onClick={() => dispatch(setModalContent("login"))}
+          >
+            Đăng nhập
+          </span>
+        </p>
       </Form>
     </div>
   );
