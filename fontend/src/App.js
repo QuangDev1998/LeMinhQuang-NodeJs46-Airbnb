@@ -17,11 +17,13 @@ import Layout from "./templates/Layout";
 import HomePage from "./pages/HomePage/HomePage";
 import RoomsPage from "./pages/RoomsPage/RoomsPage";
 import RoomsVitri from "./pages/RoomsPage/RoomsVitri";
+import FavoritesPage from "./pages/FavoritesPage/FavoritesPage";
 import ScrollToTop from "./pages/ScrollToTop/ScrollToTop";
 import QuanLySoLieu from "./pages/QuanLySoLieu/QuanLySoLieu";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setLoginData } from "./redux/slices/userSlice";
+import { fetchFavoriteIdsAction } from "./redux/slices/favoriteSlice";
 
 AOS.init();
 function App() {
@@ -33,6 +35,8 @@ function App() {
       const loginData = raw && raw !== "undefined" ? JSON.parse(raw) : null;
       if (loginData) {
         dispatch(setLoginData(loginData));
+        // Tải danh sách phòng đã yêu thích để đánh dấu trái tim
+        dispatch(fetchFavoriteIdsAction());
       }
     } catch (err) {
       console.error("Lỗi JSON.parse USER_LOGIN:", err);
@@ -51,6 +55,10 @@ function App() {
           />
           <Route path="/" element={<Layout content={<HomePage />} />} />
           <Route path="/rooms" element={<Layout content={<RoomsPage />} />} />
+          <Route
+            path="/favorites"
+            element={<Layout content={<FavoritesPage />} />}
+          />
           <Route
             path="/rooms/:id"
             element={<Layout content={<RoomsVitri />} />}

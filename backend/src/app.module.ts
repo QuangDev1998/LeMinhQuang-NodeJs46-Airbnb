@@ -7,6 +7,7 @@ import { LocationModule } from './location/location.module';
 import { RoomModule } from './room/room.module';
 import { BookingModule } from './booking/booking.module';
 import { CommentModule } from './comment/comment.module';
+import { FavoriteModule } from './favorite/favorite.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CommentModule } from './comment/comment.module';
     RoomModule,
     BookingModule,
     CommentModule,
+    FavoriteModule,
   ],
 })
 export class AppModule {}

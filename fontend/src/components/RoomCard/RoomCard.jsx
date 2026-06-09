@@ -1,14 +1,31 @@
-import React, { useState } from "react";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { message } from "antd";
 import { HeartFilled, HeartOutlined, StarFilled } from "@ant-design/icons";
+import { toggleFavoriteAction } from "../../redux/slices/favoriteSlice";
+import { setIsModalOpen, setModalContent } from "../../redux/slices/userSlice";
 
 const fmt = (n) => (Number(n) || 0).toLocaleString("en-US");
 
 /**
- * Card phòng theo phong cách Airbnb.
- * Giữ nguyên dữ liệu BE: tenPhong, hinhAnh, giaTien, khach, phongNgu, giuong, phongTam...
+ * Card phòng theo phong cách Airbnb. Nút tim lưu vào BE (yêu thích).
  */
 export default function RoomCard({ room, onClick, rating = 4.9, badge }) {
-  const [liked, setLiked] = useState(false);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.userSlice.loginData?.user);
+  const favoriteIds = useSelector((state) => state.favoriteSlice.favoriteIds);
+  const liked = favoriteIds.includes(room.id);
+
+  const handleHeart = (e) => {
+    e.stopPropagation();
+    if (!user) {
+      dispatch(setModalContent("login"));
+      dispatch(setIsModalOpen(true));
+      message.warning("Đăng nhập để lưu phòng yêu thích");
+      return;
+    }
+    dispatch(toggleFavoriteAction(room.id));
+  };
 
   return (
     <div onClick={onClick} className="group cursor-pointer">
@@ -25,11 +42,9 @@ export default function RoomCard({ room, onClick, rating = 4.9, badge }) {
           </span>
         )}
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setLiked((v) => !v);
-          }}
+          onClick={handleHeart}
           className="absolute right-3 top-3 text-2xl drop-shadow transition hover:scale-110"
+          aria-label="Yêu thích"
         >
           {liked ? (
             <HeartFilled style={{ color: "#ff385c" }} />

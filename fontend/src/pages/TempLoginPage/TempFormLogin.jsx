@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLoginData, setModalContent } from "../../redux/slices/userSlice";
 import { getListIdBookingAction } from "../../redux/thunks/bookingThunks";
+import { fetchFavoriteIdsAction } from "../../redux/slices/favoriteSlice";
 
 export default function TempFormLogin({ onLoginSuccess }) {
   const navigate = useNavigate();
@@ -22,6 +23,8 @@ export default function TempFormLogin({ onLoginSuccess }) {
 
         // Load danh sách đã đặt phòng theo user.id
         dispatch(getListIdBookingAction(user.id));
+        // Load danh sách phòng yêu thích
+        dispatch(fetchFavoriteIdsAction());
 
         message.success("Đăng nhập thành công!");
 

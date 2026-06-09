@@ -7,23 +7,46 @@ import {
   StarFilled,
   ShareAltOutlined,
   HeartOutlined,
+  HeartFilled,
 } from "@ant-design/icons";
-import { Image, Spin } from "antd";
+import { Image, Spin, message } from "antd";
 import InfoRoomLeft from "./InfoRoomLeft";
 import InfoRoomRight from "./InfoRoomRight";
 import Comment from "./Comment";
 import ModalCalendar from "./ModalCalendar";
 import { checkIsBookedAction } from "../../redux/thunks/bookingThunks";
+import { toggleFavoriteAction } from "../../redux/slices/favoriteSlice";
+import { setIsModalOpen, setModalContent } from "../../redux/slices/userSlice";
 
 export default function RoomDetailPage() {
   const { infoRoom, listComment } = useSelector(
     (state) => state.detailRoomSlice
   );
   const { listIdBooking } = useSelector((state) => state.bookingSlice);
+  const user = useSelector((state) => state.userSlice.loginData?.user);
+  const favoriteIds = useSelector((state) => state.favoriteSlice.favoriteIds);
   const dispatch = useDispatch();
   const params = useParams();
   const idRoom = params.id;
   const { themeMode } = useSelector((state) => state.darkModeSlice);
+  const liked = favoriteIds.includes(infoRoom?.id);
+
+  const handleShare = () => {
+    navigator.clipboard
+      ?.writeText(window.location.href)
+      .then(() => message.success("Đã sao chép liên kết phòng"))
+      .catch(() => message.info(window.location.href));
+  };
+
+  const handleSave = () => {
+    if (!user) {
+      dispatch(setModalContent("login"));
+      dispatch(setIsModalOpen(true));
+      message.warning("Đăng nhập để lưu phòng yêu thích");
+      return;
+    }
+    dispatch(toggleFavoriteAction(infoRoom.id));
+  };
   useEffect(() => {
     if (idRoom) {
       const numericIdRoom = Number(idRoom); // 👈 chuyển idRoom sang số
@@ -115,11 +138,22 @@ export default function RoomDetailPage() {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <button className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium underline transition hover:bg-gray-100">
+              <button
+                onClick={handleShare}
+                className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium underline transition hover:bg-gray-100"
+              >
                 <ShareAltOutlined /> Chia sẻ
               </button>
-              <button className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium underline transition hover:bg-gray-100">
-                <HeartOutlined /> Lưu
+              <button
+                onClick={handleSave}
+                className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium underline transition hover:bg-gray-100"
+              >
+                {liked ? (
+                  <HeartFilled style={{ color: "#ff385c" }} />
+                ) : (
+                  <HeartOutlined />
+                )}{" "}
+                {liked ? "Đã lưu" : "Lưu"}
               </button>
             </div>
           </div>

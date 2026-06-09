@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { message } from "antd";
 import { setLoginData } from "../../redux/slices/userSlice";
 import { getListIdBookingAction } from "../../redux/thunks/bookingThunks";
+import { fetchFavoriteIdsAction } from "../../redux/slices/favoriteSlice";
 import { authServices } from "../../services/authServices";
 
 const FacebookButton = ({ onLoginSuccess }) => {
@@ -25,6 +26,7 @@ const FacebookButton = ({ onLoginSuccess }) => {
 
       dispatch(setLoginData(loggedInUser));
       dispatch(getListIdBookingAction(loggedInUser.user.id));
+      dispatch(fetchFavoriteIdsAction());
 
       message.success("Đăng nhập thành công!");
       if (onLoginSuccess) onLoginSuccess();

@@ -7,6 +7,7 @@ import {
   GlobalOutlined,
   MenuOutlined,
   UserOutlined,
+  HeartOutlined,
 } from "@ant-design/icons";
 import TempFormLogin from "../../pages/TempLoginPage/TempFormLogin";
 import TempFormRegister from "../../pages/TempLoginPage/TempFormRegister";
@@ -141,6 +142,13 @@ export default function TempHeader() {
           >
             Cho thuê chỗ ở trên Airbnb
           </NavLink>
+          <button
+            onClick={() => navigate("/favorites")}
+            aria-label="Yêu thích"
+            className="hidden h-10 w-10 items-center justify-center rounded-full text-gray-700 transition hover:bg-gray-100 sm:flex"
+          >
+            <HeartOutlined />
+          </button>
           <button className="hidden h-10 w-10 items-center justify-center rounded-full text-gray-700 transition hover:bg-gray-100 sm:flex">
             <GlobalOutlined />
           </button>
@@ -192,6 +200,13 @@ export default function TempHeader() {
                         Trang cá nhân
                       </a>
                     )}
+                    <NavLink
+                      to="/favorites"
+                      onClick={() => setShowDropdown(false)}
+                      className="block px-4 py-2.5 text-sm text-gray-700 transition hover:bg-gray-100"
+                    >
+                      Yêu thích
+                    </NavLink>
                     {user.user.role === "ADMIN" && (
                       <a
                         href="/admin/QuanLySoLieu"

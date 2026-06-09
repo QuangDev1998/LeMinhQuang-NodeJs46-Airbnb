@@ -19,6 +19,7 @@ model NguoiDung {
   avatar    String?
   BinhLuan  BinhLuan[]
   DatPhong  DatPhong[]
+  YeuThich  YeuThich[]
 }
 
 model ViTri {
@@ -54,9 +55,23 @@ model Phong {
   vi_tri_id Int
   BinhLuan  BinhLuan[]
   DatPhong  DatPhong[]
+  YeuThich  YeuThich[]
   ViTri     ViTri      @relation(fields: [vi_tri_id], references: [id])
 
   @@index([vi_tri_id], map: "Phong_vi_tri_id_fkey")
+}
+
+model YeuThich {
+  id            Int       @id @default(autoincrement())
+  ma_nguoi_dung Int
+  ma_phong      Int
+  ngay_tao      DateTime  @default(now())
+  NguoiDung     NguoiDung @relation(fields: [ma_nguoi_dung], references: [id])
+  Phong         Phong     @relation(fields: [ma_phong], references: [id])
+
+  @@unique([ma_nguoi_dung, ma_phong])
+  @@index([ma_nguoi_dung], map: "YeuThich_ma_nguoi_dung_fkey")
+  @@index([ma_phong], map: "YeuThich_ma_phong_fkey")
 }
 
 model DatPhong {
