@@ -1,21 +1,24 @@
 import React from "react";
-
-// Ảnh hero nhẹ (Unsplash) thay cho video 77MB trước đây -> tải nhanh, hoạt
-// động tốt cả trên mobile.
-const HERO_IMG =
-  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80";
+import bannerVideo from "../../assets/image/banner.mp4";
+import bannerPoster from "../../assets/image/banner-poster.jpg";
 
 export default function Carousel() {
   return (
     <div className="container">
-      <div className="relative h-[60vh] max-h-[560px] min-h-[360px] w-full overflow-hidden rounded-3xl">
-        <img
-          src={HERO_IMG}
-          alt="Khám phá chỗ nghỉ"
-          className="hero-zoom absolute inset-0 h-full w-full object-cover"
-          loading="eager"
-          fetchpriority="high"
-        />
+      <div className="relative h-[60vh] max-h-[560px] min-h-[360px] w-full overflow-hidden rounded-3xl bg-gray-900">
+        {/* Video đã nén 77MB -> 3.3MB. poster hiện ngay lập tức (84KB) trong khi
+            video tải, và là ảnh dự phòng nếu trình duyệt chặn autoplay. */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          poster={bannerPoster}
+          className="absolute inset-0 h-full w-full object-cover"
+        >
+          <source src={bannerVideo} type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent" />
 
         <div className="absolute bottom-8 left-5 right-5 text-white sm:bottom-10 sm:left-12">
