@@ -21,13 +21,21 @@ import FavoritesPage from "./pages/FavoritesPage/FavoritesPage";
 import ScrollToTop from "./pages/ScrollToTop/ScrollToTop";
 import QuanLySoLieu from "./pages/QuanLySoLieu/QuanLySoLieu";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setLoginData } from "./redux/slices/userSlice";
 import { fetchFavoriteIdsAction } from "./redux/slices/favoriteSlice";
 
 AOS.init();
 function App() {
   const dispatch = useDispatch();
+  const { themeMode } = useSelector((state) => state.darkModeSlice);
+
+  // Đồng bộ class dark/light lên <html> để TOÀN BỘ app (kể cả header) đổi màu
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle("dark", themeMode === "dark");
+    root.classList.toggle("light", themeMode !== "dark");
+  }, [themeMode]);
 
   useEffect(() => {
     try {

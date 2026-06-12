@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { phongServices } from "../../services/phongServices";
-import SelectForm from "../HomePage/SelectForm";
 import { useSelector } from "react-redux";
 import RoomCard from "../../components/RoomCard/RoomCard";
 
 export default function RoomsVitri() {
-  const { soLuongKhach } = useSelector((state) => state.bookingSlice);
+  const { soLuongKhach, ngayDen, ngayDi, dateChosen } = useSelector(
+    (state) => state.bookingSlice
+  );
   const { id } = useParams();
   const [rooms, setRooms] = useState([]);
   const navigate = useNavigate();
@@ -29,8 +30,13 @@ export default function RoomsVitri() {
 
   useEffect(() => {
     if (id) {
+      // Mặc định lấy tất cả phòng theo vị trí; chỉ lọc theo ngày trống khi user đã chọn ngày
       phongServices
-        .locationPhong(id)
+        .locationPhong(
+          id,
+          dateChosen ? ngayDen : undefined,
+          dateChosen ? ngayDi : undefined
+        )
         .then((res) => {
           const content = res.data?.content || [];
           setRooms(content);
@@ -39,7 +45,7 @@ export default function RoomsVitri() {
           console.error("Lỗi khi lấy dữ liệu phòng:", err);
         });
     }
-  }, [id]);
+  }, [id, ngayDen, ngayDi, dateChosen]);
 
   const filteredRooms = rooms.filter((room) => room.khach >= soLuongKhach);
   const locationName = locationMapping[+id] || "Địa điểm không xác định";
@@ -69,8 +75,6 @@ export default function RoomsVitri() {
 
   return (
     <div className={`${themeMode} pt-24`}>
-      <SelectForm isRoompage={false} handleSelectRoomByLocation={() => {}} />
-
       <div className="container pb-16">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           <div>

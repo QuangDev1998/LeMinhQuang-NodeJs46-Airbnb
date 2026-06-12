@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { phongServices } from "../../services/phongServices";
-import SelectForm from "../HomePage/SelectForm";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 import { useSelector } from "react-redux";
@@ -11,13 +10,19 @@ export default function RoomsPage() {
   const [phongArr, setPhongArr] = useState([]);
   const [category, setCategory] = useState("Tất cả");
   const navigate = useNavigate();
-  const { soLuongKhach } = useSelector((state) => state.bookingSlice);
+  const { soLuongKhach, ngayDen, ngayDi, dateChosen } = useSelector(
+    (state) => state.bookingSlice
+  );
   const { themeMode } = useSelector((state) => state.darkModeSlice);
 
-  // Lấy phòng theo danh mục (mặc định: tất cả)
+  // Lấy phòng theo danh mục; mặc định tất cả, chỉ lọc theo ngày trống khi user đã chọn ngày
   useEffect(() => {
     phongServices
-      .getListPhongByCategory(category)
+      .getListPhongByCategory(
+        category,
+        dateChosen ? ngayDen : undefined,
+        dateChosen ? ngayDi : undefined
+      )
       .then((res) => {
         const data = res.data?.content || [];
         if (data.length === 0 && category === "Tất cả") {
@@ -26,17 +31,10 @@ export default function RoomsPage() {
         setPhongArr(data);
       })
       .catch((err) => console.error("Lỗi khi gọi API:", err));
-  }, [category]);
+  }, [category, ngayDen, ngayDi, dateChosen]);
 
   const handleRoomClick = (id) => {
     navigate(`/room-detail/${id}`);
-  };
-
-  // SelectForm chọn theo địa điểm -> ghi đè danh sách
-  const handleSelectRoomByLocation = async (id) => {
-    const result = await phongServices.locationPhong(id);
-    setPhongArr(result.data.content);
-    setCategory("Tất cả");
   };
 
   const renderList = () => {
@@ -62,10 +60,6 @@ export default function RoomsPage() {
 
   return (
     <div className={`${themeMode} pt-24`}>
-      <SelectForm
-        isRoompage={true}
-        handleSelectRoomByLocation={handleSelectRoomByLocation}
-      />
       <CategoryBar selected={category} onSelect={setCategory} />
       <div className="container py-8 pb-16">
         <h1 className="mb-6 text-2xl font-bold">

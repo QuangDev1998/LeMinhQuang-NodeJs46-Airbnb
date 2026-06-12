@@ -2,6 +2,78 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Cuộn mượt khi đổi trang / nhảy mục */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Fade-in nhẹ cho nội dung mỗi khi đổi route -> chuyển động mượt, không giật */
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-fade {
+  animation: pageFadeIn 0.28s ease-out;
+}
+
+/* Xuất hiện trượt lên (dùng cho trang cá nhân, có thể đặt animation-delay để stagger) */
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.reveal {
+  animation: revealUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Phóng nhẹ khi xuất hiện */
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.pop-in {
+  animation: popIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Hover nhấc thẻ lên */
+.hover-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.16);
+}
+
+/* Tôn trọng người dùng tắt hiệu ứng chuyển động */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .page-fade,
+  .reveal,
+  .pop-in {
+    animation: none;
+  }
+}
+
 html,
 body {
   margin: 0;
@@ -44,4 +116,274 @@ code {
   .rdrMonth {
     width: 100% !important;
   }
+}
+
+/* =========================================================
+   NÚT CHUYỂN SÁNG / TỐI (antd Switch)
+   ========================================================= */
+.ant-switch {
+  background-color: #cbd5e1; /* off: xám nhạt */
+  min-width: 56px;
+  height: 26px;
+  line-height: 26px;
+}
+.ant-switch:hover:not(.ant-switch-disabled) {
+  background-color: #94a3b8;
+}
+.ant-switch.ant-switch-checked {
+  background-color: #334155; /* on: xanh đen */
+}
+.ant-switch.ant-switch-checked:hover:not(.ant-switch-disabled) {
+  background-color: #1e293b;
+}
+.ant-switch .ant-switch-handle {
+  top: 3px;
+  width: 20px;
+  height: 20px;
+}
+.ant-switch.ant-switch-checked .ant-switch-handle {
+  inset-inline-start: calc(100% - 22px);
+}
+.ant-switch .ant-switch-inner {
+  display: flex;
+  align-items: center;
+}
+.ant-switch .ant-switch-inner i {
+  font-size: 13px;
+  line-height: 1;
+}
+.ant-switch .ant-switch-inner .fa-sun {
+  color: #f59e0b; /* mặt trời vàng cam */
+}
+.ant-switch .ant-switch-inner .fa-moon {
+  color: #fde68a; /* mặt trăng vàng nhạt */
+}
+
+/* =========================================================
+   MODAL THÊM / SỬA (trang quản trị)
+   ========================================================= */
+.admin-modal .ant-modal-content {
+  border-radius: 20px;
+  padding: 22px 24px;
+}
+.admin-modal .ant-modal-footer {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+.admin-modal .ant-modal-footer .ant-btn {
+  height: 40px;
+  border-radius: 9999px;
+  font-weight: 600;
+  padding-inline: 22px;
+}
+.admin-modal .ant-form-item-label > label {
+  font-weight: 600;
+  color: #374151;
+}
+.admin-modal .ant-input,
+.admin-modal .ant-input-affix-wrapper,
+.admin-modal .ant-picker,
+.admin-modal .ant-select-selector,
+.admin-modal .ant-input-number {
+  border-radius: 10px !important;
+  min-height: 40px;
+}
+.admin-modal .ant-select-selector {
+  display: flex !important;
+  align-items: center;
+}
+
+/* =========================================================
+   CHẾ ĐỘ TỐI (DARK MODE) — đổi màu toàn app khi <html> có .dark
+   ========================================================= */
+
+/* Chuyển màu nền tổng thể mượt khi bật/tắt dark.
+   Chỉ áp dụng ở body để KHÔNG ghi đè transition transform/opacity
+   của các phần tử có animation (vd pill ở header). */
+body {
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+html.dark,
+html.dark body {
+  background-color: #121212;
+  color: #ededed;
+  color-scheme: dark;
+}
+
+/* Bề mặt (card, header, popover trigger…) */
+.dark .bg-white {
+  background-color: #1e1e1e !important;
+}
+.dark .bg-gray-50 {
+  background-color: #1a1a1a !important;
+}
+.dark .bg-gray-100 {
+  background-color: #2a2a2a !important;
+}
+.dark .bg-gray-500 {
+  background-color: #3a3a3a !important;
+}
+
+/* Chữ */
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-black {
+  color: #ededed !important;
+}
+.dark .text-gray-700,
+.dark .text-gray-600 {
+  color: #cfcfcf !important;
+}
+.dark .text-gray-500,
+.dark .text-gray-400 {
+  color: #9a9a9a !important;
+}
+
+/* Viền */
+.dark .border-gray-100,
+.dark .border-gray-200,
+.dark .border-gray-300 {
+  border-color: #303030 !important;
+}
+
+/* Header & bóng đổ */
+.dark header {
+  background-color: #181818 !important;
+  border-color: #2a2a2a !important;
+}
+.dark .shadow-sm,
+.dark .shadow-md,
+.dark .shadow-xl,
+.dark .shadow-airbnb,
+.dark .airbnb-card-shadow {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Hover xám trong dark */
+.dark .hover\:bg-gray-100:hover {
+  background-color: #2c2c2c !important;
+}
+.dark .hover\:bg-gray-50:hover {
+  background-color: #242424 !important;
+}
+
+/* Divider / line ngăn cách */
+.dark .divide-y-2 > * + *,
+.dark .divide-gray-100 > * + * {
+  border-color: #2c2c2c !important;
+}
+
+/* ----- antd trong dark (Modal / Select / Popover render ở portal) ----- */
+.dark .ant-modal-content,
+.dark .ant-popover-inner {
+  background-color: #1e1e1e !important;
+  color: #ededed !important;
+}
+.dark .admin-modal .ant-modal-footer {
+  border-color: #303030 !important;
+}
+.dark .admin-modal .ant-form-item-label > label {
+  color: #cfcfcf !important;
+}
+.dark .ant-modal-close-icon {
+  color: #cfcfcf !important;
+}
+.dark .ant-select-selector {
+  background-color: #262626 !important;
+  border-color: #383838 !important;
+  color: #ededed !important;
+}
+.dark .ant-select-selection-placeholder {
+  color: #8a8a8a !important;
+}
+.dark .ant-select-selection-item,
+.dark .ant-select-arrow {
+  color: #ededed !important;
+}
+.dark .ant-select-dropdown {
+  background-color: #1e1e1e !important;
+}
+.dark .ant-select-item {
+  color: #dddddd !important;
+}
+.dark .ant-select-item-option-active,
+.dark .ant-select-item-option-selected {
+  background-color: #2c2c2c !important;
+}
+.dark .ant-input,
+.dark .ant-input-affix-wrapper,
+.dark .ant-input-password {
+  background-color: #262626 !important;
+  border-color: #383838 !important;
+  color: #ededed !important;
+}
+
+/* ----- react-date-range trong dark ----- */
+.dark .rdrCalendarWrapper,
+.dark .rdrDateDisplayWrapper,
+.dark .rdrMonthAndYearWrapper,
+.dark .rdrMonths,
+.dark .rdrMonth {
+  background: #1e1e1e !important;
+  color: #ededed !important;
+}
+.dark .rdrDayNumber span {
+  color: #ededed !important;
+}
+.dark .rdrDayPassive .rdrDayNumber span,
+.dark .rdrDayDisabled .rdrDayNumber span {
+  color: #5a5a5a !important;
+}
+.dark .rdrWeekDay,
+.dark .rdrMonthName {
+  color: #9a9a9a !important;
+}
+.dark .rdrMonthAndYearPickers select {
+  color: #ededed !important;
+}
+.dark .rdrDateDisplayItem {
+  background-color: #262626 !important;
+}
+.dark .rdrDateDisplayItem input {
+  color: #ededed !important;
+}
+
+/* ----- antd Table / Card / Pagination (trang quản trị) trong dark ----- */
+.dark .ant-table,
+.dark .ant-table-cell,
+.dark .ant-card {
+  background-color: #1e1e1e !important;
+  color: #ededed !important;
+}
+.dark .ant-table-thead > tr > th {
+  background-color: #262626 !important;
+  color: #ededed !important;
+  border-color: #303030 !important;
+}
+.dark .ant-table-tbody > tr > td {
+  border-color: #303030 !important;
+}
+.dark .ant-table-tbody > tr:hover > td,
+.dark .ant-table-cell-row-hover {
+  background-color: #2a2a2a !important;
+}
+.dark .ant-modal-header,
+.dark .ant-modal-title,
+.dark .ant-card-head {
+  background-color: #1e1e1e !important;
+  color: #ededed !important;
+  border-color: #303030 !important;
+}
+.dark .ant-pagination-item,
+.dark .ant-pagination-item a,
+.dark .ant-pagination-prev .ant-pagination-item-link,
+.dark .ant-pagination-next .ant-pagination-item-link {
+  background-color: #262626 !important;
+  border-color: #383838 !important;
+  color: #ededed !important;
+}
+.dark .ant-empty-description {
+  color: #9a9a9a !important;
 }

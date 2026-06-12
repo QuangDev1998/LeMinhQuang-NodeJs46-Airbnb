@@ -13,6 +13,8 @@ const initialState = {
   totalDay: 7,
   ngayDen: new Date(),
   ngayDi: addDays(new Date(), 7),
+  // Người dùng đã chủ động chọn ngày ở bộ lọc chưa? (để mặc định hiện tất cả phòng)
+  dateChosen: false,
   soLuongKhach: 1,
   tienTruocThue: null,
   isModalCalendarOpen: false,
@@ -48,6 +50,9 @@ const bookingSlice = createSlice({
     setNgayDi: (state, action) => {
       state.ngayDi = action.payload;
     },
+    setDateChosen: (state, action) => {
+      state.dateChosen = action.payload;
+    },
     setIsModalPaymentOpen: (state, action) => {
       state.isModalPaymentOpen = action.payload;
     },
@@ -82,6 +87,7 @@ export const {
   setSoLuongKhach,
   setNgayDen,
   setNgayDi,
+  setDateChosen,
   setIsModalPaymentOpen,
   setIsModalReBookingOpen,
 } = bookingSlice.actions;

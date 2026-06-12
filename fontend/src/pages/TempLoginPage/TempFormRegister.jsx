@@ -15,12 +15,13 @@ export default function TempFormRegister({ onRegisterSuccess }) {
     const genderValue =
       gender === "male" ? true : gender === "female" ? false : null;
 
-    // Dữ liệu gửi lên API
+    // Dữ liệu gửi lên API.
+    // BE (SignupDto) dùng field `birth_day` dạng ISO (YYYY-MM-DD), không phải `birthday`.
     const data = {
       name: name,
       email: email,
       phone: phone,
-      birthday: birthday,
+      birth_day: birthday ? dayjs(birthday).format("YYYY-MM-DD") : undefined,
       gender: genderValue,
       pass_word: pass_word,
     };

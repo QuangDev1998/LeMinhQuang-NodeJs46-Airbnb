@@ -92,10 +92,10 @@
   flex-direction: row !important;
 }
 
+/* Nền tối cho wrapper trang (chi tiết override nằm ở index.css) */
 .dark {
-  background-color: black;
-  color: white;
-  border-color: white;
+  background-color: #121212;
+  color: #ededed;
 }
 
 /* đè css của react-date-range */

@@ -11,7 +11,7 @@ export default function Comment({ idRoom }) {
   const { listComment } = useSelector((state) => state.detailRoomSlice);
   const { isBooked } = useSelector((state) => state.bookingSlice);
   const loginData = useSelector((state) => state.userSlice.loginData);
-  const token = loginData?.token;
+  const token = loginData?.access_token;
   const user = loginData?.user;
 
   useEffect(() => {
@@ -19,11 +19,13 @@ export default function Comment({ idRoom }) {
   }, [idRoom]);
 
   const onFinish = (values) => {
+    // BE (CreateCommentDto) yêu cầu field snake_case + ngày dạng ISO string
     const data = {
-      ...values,
-      maPhong: idRoom,
-      maNguoiBinhLuan: user.id,
-      ngayBinhLuan: dayjs(),
+      ma_phong: Number(idRoom),
+      ma_nguoi_binh_luan: user.id,
+      noi_dung: values.noiDung,
+      sao_binh_luan: values.saoBinhLuan,
+      ngay_binh_luan: dayjs().toISOString(),
     };
     binhLuanServices
       .addComment(token, data)
