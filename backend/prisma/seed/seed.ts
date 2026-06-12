@@ -12,11 +12,16 @@ async function main() {
   await prisma.nguoiDung.deleteMany();
   await prisma.viTri.deleteMany();
 
-  // 🔁 Reset AUTO_INCREMENT để ID luôn bắt đầu từ 1 (ổn định giữa các lần seed)
+  // 🔁 Reset AUTO_INCREMENT để ID luôn bắt đầu từ 1 (ổn định giữa các lần seed).
+  // Cú pháp này chỉ đúng với MySQL -> bỏ qua nếu DB khác (vd SQLite trên Render demo).
   for (const table of ['BinhLuan', 'DatPhong', 'Phong', 'NguoiDung', 'ViTri']) {
-    await prisma.$executeRawUnsafe(
-      `ALTER TABLE \`${table}\` AUTO_INCREMENT = 1`,
-    );
+    try {
+      await prisma.$executeRawUnsafe(
+        `ALTER TABLE \`${table}\` AUTO_INCREMENT = 1`,
+      );
+    } catch {
+      // SQLite/Postgres không hỗ trợ -> không sao
+    }
   }
 
   console.log('🌱 Bắt đầu seeding...\n');
