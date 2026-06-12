@@ -1,0 +1,24 @@
+# Domain lấy từ biến môi trường BACKEND_DOMAIN (đặt qua GitHub secret -> .env).
+# Caddy tự xin & gia hạn chứng chỉ Let's Encrypt, tự ép HTTP -> HTTPS.
+{$BACKEND_DOMAIN} {
+	# Chuyển tiếp về backend qua mạng docker nội bộ
+	reverse_proxy backend:3000
+
+	# Security headers
+	header {
+		# Bắt buộc HTTPS trong 1 năm
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		# Chặn MIME sniffing
+		X-Content-Type-Options "nosniff"
+		# Chặn nhúng vào iframe (clickjacking)
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		# Ẩn thông tin server
+		-Server
+	}
+
+	# Giới hạn dung lượng request (chặn payload quá lớn)
+	request_body {
+		max_size 15MB
+	}
+}

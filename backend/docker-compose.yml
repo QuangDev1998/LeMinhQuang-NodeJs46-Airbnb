@@ -1,11 +1,11 @@
-version: '3.9'
-
 services:
   backend:
     image: leminhquangdev/airbnb-backend:latest
     container_name: cons-airbnb-backend
+    # Chỉ bind localhost trên server (để debug), KHÔNG phơi ra internet.
+    # Caddy truy cập backend qua mạng docker nội bộ (backend:3000).
     ports:
-      - '3001:3000'
+      - '127.0.0.1:3001:3000'
     env_file:
       - .env
     depends_on:
@@ -15,8 +15,7 @@ services:
   mysql:
     image: mysql:8
     container_name: cons-airbnb-mysql
-    ports:
-      - '3306:3306'
+    # KHÔNG mở cổng 3306 ra ngoài -> chỉ truy cập trong mạng docker (backend -> mysql:3306).
     environment:
       MYSQL_ROOT_PASSWORD: 123456
       MYSQL_DATABASE: airbnb_db
@@ -24,5 +23,24 @@ services:
       - mysql_data:/var/lib/mysql
     restart: always
 
+  caddy:
+    image: caddy:2
+    container_name: cons-airbnb-caddy
+    restart: always
+    # 80 để Let's Encrypt xác thực + redirect, 443 cho HTTPS
+    ports:
+      - '80:80'
+      - '443:443'
+    environment:
+      - BACKEND_DOMAIN=${BACKEND_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+
 volumes:
   mysql_data:
+  caddy_data:
+  caddy_config:
