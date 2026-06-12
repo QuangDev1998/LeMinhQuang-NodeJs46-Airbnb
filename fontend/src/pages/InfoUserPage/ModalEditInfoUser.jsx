@@ -28,7 +28,8 @@ export default function ModalEditInfoUser() {
     dispatch(setIsModalEditOpenAction(false));
   };
   const handleOk = (values) => {
-    values.birthday = dayjs(values.birthday).format("DD-MM-YYYY");
+    // Gửi ISO YYYY-MM-DD để BE (new Date(...)) parse đúng; DD-MM-YYYY bị hiểu nhầm thành MM-DD-YYYY
+    values.birthday = dayjs(values.birthday).format("YYYY-MM-DD");
     const valuesClone = { ...values, role: infoUser.role };
     values = valuesClone;
     nguoiDungServices

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, message, Popconfirm, Pagination } from "antd";
+import { message, Popconfirm, Pagination } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createListBookedRoomAction,
@@ -64,7 +64,7 @@ export default function ListBookedRoom() {
       const ngayDen = dayjs(listBooked[index].ngayDen).format("DD/MM/YYYY");
       const ngayDi = dayjs(listBooked[index].ngayDi).format("DD/MM/YYYY");
       return (
-        <span className="text-sm block">
+        <span>
           {ngayDen} - {ngayDi}
         </span>
       );
@@ -73,79 +73,102 @@ export default function ListBookedRoom() {
 
   const renderRoomInfo = (maPhong, idBooking) => {
     let index = listBookedRoom.findIndex((room) => room.id === maPhong);
-    if (index !== -1) {
-      let room = listBookedRoom[index];
-      return (
-        <Card hoverable data-aos="zoom-in">
-          <div className="grid grid-cols1 md:grid-cols-2 gap-5 z-0">
-            <div className="absolute top-0 right-0 grid grid-cols1 md:flex gap-2 z-10">
-              <Button
-                className="h-8 w-8 text-blue-500"
-                onClick={() => {
-                  navigate(`/room-detail/${room.id}`);
-                }}
-              >
-                <InfoCircleOutlined />
-              </Button>
+    if (index === -1) return null;
+    const room = listBookedRoom[index];
+    const amenities = [
+      { ok: room.dieuHoa, label: "Điều hòa" },
+      { ok: room.bep, label: "Bếp" },
+      { ok: room.hoBoi, label: "Hồ bơi" },
+    ];
+    return (
+      <div
+        data-aos="zoom-in"
+        className="hover-lift group relative overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-airbnb"
+      >
+        {/* Nút thao tác */}
+        <div className="absolute right-3 top-3 z-10 flex gap-2">
+          <button
+            onClick={() => navigate(`/room-detail/${room.id}`)}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow transition hover:scale-110 hover:text-[#ff385c]"
+            title="Xem chi tiết"
+          >
+            <InfoCircleOutlined />
+          </button>
+          <Popconfirm
+            title="Huỷ đặt phòng"
+            description="Bạn có chắc muốn huỷ đặt phòng này?"
+            onConfirm={() => confirm(idBooking)}
+            okText="Có"
+            cancelText="Không"
+            okButtonProps={{ danger: true }}
+          >
+            <button
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-red-500 shadow transition hover:scale-110"
+              title="Huỷ đặt"
+            >
+              <DeleteOutlined />
+            </button>
+          </Popconfirm>
+        </div>
 
-              <Popconfirm
-                title="Xoá người dùng"
-                description="Bạn có chắc muốn xóa người dùng?"
-                onConfirm={() => confirm(idBooking)}
-                okText="Có"
-                cancelText="Không"
-                okButtonProps={{
-                  danger: "danger",
-                }}
-                className="z-50"
-              >
-                <Button className="h-8 w-8 text-red-500">
-                  <DeleteOutlined />
-                </Button>
-              </Popconfirm>
+        <div className="flex flex-col sm:flex-row">
+          {/* Ảnh */}
+          <div className="h-48 w-full overflow-hidden sm:h-auto sm:w-64 sm:shrink-0">
+            <img
+              src={room.hinhAnh}
+              alt={room.tenPhong}
+              className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+            />
+          </div>
+
+          {/* Thông tin */}
+          <div className="flex flex-1 flex-col gap-3 p-5">
+            <div>
+              <h3 className="pr-20 text-lg font-bold text-gray-900">
+                {room.tenPhong}
+              </h3>
+              <p className="mt-1 text-sm text-gray-500">
+                <EnvironmentOutlined className="mr-1" />
+                {renderTinhThanh(room.maViTri)}
+              </p>
             </div>
-            <div className="h-48">
-              <img
-                src={room.hinhAnh}
-                alt=""
-                className="h-full object-cover rounded-md"
-              />
+
+            <span className="inline-flex w-fit items-center gap-2 rounded-full bg-[#ff385c]/10 px-3 py-1 text-sm font-medium text-[#ff385c]">
+              <i className="far fa-calendar" />
+              {renderDateBookRoom(idBooking)}
+            </span>
+
+            <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-gray-500">
+              <span>{room.phongNgu} phòng ngủ</span>
+              <span>{room.giuong} giường</span>
+              <span>{room.phongTam} phòng tắm</span>
             </div>
-            <div className="divide-y-2">
-              <div>
-                <h1 className="text-lg font-bold">{room.tenPhong}</h1>
-                <div className=" text-gray-400">
-                  {renderDateBookRoom(idBooking)}
-                </div>
 
-                <p className="text-sm">
-                  <EnvironmentOutlined className="mr-1" />
-                  {renderTinhThanh(room.maViTri)}
-                </p>
-              </div>
+            <div className="flex flex-wrap gap-2">
+              {amenities.map((a, i) => (
+                <span
+                  key={i}
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                    a.ok
+                      ? "bg-green-50 text-green-600"
+                      : "bg-gray-100 text-gray-400 line-through"
+                  }`}
+                >
+                  {a.label}
+                </span>
+              ))}
+            </div>
 
-              <div className="mt-2 flex justify-start gap-5 text-gray-500">
-                <ul>
-                  <li>{room.phongNgu} phòng ngủ</li>
-                  <li>{room.giuong} giường</li>
-                  <li>{room.phongTam} phòng tắm</li>
-                </ul>
-                <ul>
-                  <li>{room.dieuHoa ? "v" : "x"} Điều hòa</li>
-                  <li>{room.bep ? "v" : "x"} Bếp</li>
-                  <li>{room.hoBoi ? "v" : "x"} Hồ bơi</li>
-                </ul>
-              </div>
-              <div className="mt-2">
-                <p>
-                  <span className="font-bold">$ {room.giaTien}</span> / đêm
-                </p>
-              </div>
+            <div className="mt-auto border-t border-gray-100 pt-3">
+              <span className="text-lg font-extrabold text-gray-900">
+                ${room.giaTien}
+              </span>
+              <span className="text-sm text-gray-500"> / đêm</span>
             </div>
           </div>
-        </Card>
-      );
-    }
+        </div>
+      </div>
+    );
   };
 
   const renderListBookedRoom = () => {
@@ -155,9 +178,7 @@ export default function ListBookedRoom() {
       startIndex + itemsPerPage
     );
     return currentRooms.map((room) => (
-      <div className="mt-5 duration-300" key={room.id}>
-        {renderRoomInfo(room.ma_phong, room.id)}
-      </div>
+      <div key={room.id}>{renderRoomInfo(room.ma_phong, room.id)}</div>
     ));
   };
 
@@ -170,7 +191,7 @@ export default function ListBookedRoom() {
         dispatch(createListIdBookingAction(idUser));
       })
       .catch((err) => {
-        message.success("Xóa thất bại");
+        message.error("Xóa thất bại");
         console.error(err);
       });
   };
@@ -180,28 +201,37 @@ export default function ListBookedRoom() {
   };
 
   return (
-    <div>
+    <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-airbnb">
+      <div className="mb-2 flex items-center justify-between">
+        <h2 className="text-lg font-bold text-gray-900">Phòng đã thuê</h2>
+        {listBookedRoom.length > 0 && (
+          <span className="rounded-full bg-[#ff385c]/10 px-3 py-1 text-xs font-semibold text-[#ff385c]">
+            {listBooked.length} chuyến đi
+          </span>
+        )}
+      </div>
+
       {listBookedRoom.length > 0 ? (
         <div>
-          <h1 className="text-xl font-bold">Phòng đã thuê</h1>
-          {/* Pagination ở trên */}
+          <div className="space-y-5">{renderListBookedRoom()}</div>
           <Pagination
             current={currentPage}
             pageSize={itemsPerPage}
             total={listBooked.length}
             showSizeChanger={false}
-            onChange={(page) => {
-              setCurrentPage(page);
-            }}
-            className="my-4"
+            onChange={(page) => setCurrentPage(page)}
+            className="mt-5 text-center"
           />
-          <div className="relative">{renderListBookedRoom()}</div>
         </div>
       ) : (
-        <div>
-          <h1 className="text-xl font-bold">Phòng đã thuê</h1>
-          <a href="/" className="hover:underline text-primary">
-            Hiện bạn chưa có phòng, bạn có muốn đặt phòng?
+        <div className="flex flex-col items-center gap-3 py-10 text-center">
+          <i className="fa-regular fa-calendar-xmark text-4xl text-gray-300" />
+          <p className="text-gray-500">Bạn chưa đặt phòng nào.</p>
+          <a
+            href="/rooms"
+            className="rounded-full bg-[#ff385c] px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+          >
+            Khám phá chỗ ở
           </a>
         </div>
       )}
