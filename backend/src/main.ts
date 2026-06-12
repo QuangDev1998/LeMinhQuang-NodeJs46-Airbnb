@@ -19,8 +19,15 @@ async function bootstrap() {
     }),
   );
 
+  // CLIENT_URL: 1 domain, hoặc nhiều domain ngăn cách bằng dấu phẩy, hoặc "*"
+  // (cho phép mọi origin - dùng cho demo khi frontend đổi host nhiều lần).
+  const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+  const allowList = clientUrl.split(',').map((s) => s.trim());
   app.enableCors({
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    origin:
+      clientUrl.trim() === '*'
+        ? true
+        : (origin, cb) => cb(null, !origin || allowList.includes(origin)),
     credentials: true,
   });
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));

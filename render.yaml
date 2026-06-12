@@ -13,7 +13,7 @@ services:
       - key: DATABASE_URL
         value: file:./prod.db
       - key: CLIENT_URL
-        value: https://air-bnb-vn.netlify.app
+        value: "*"
       - key: ACCESS_TOKEN_SECRET
         generateValue: true
       - key: ACCESS_TOKEN_EXPIRED
