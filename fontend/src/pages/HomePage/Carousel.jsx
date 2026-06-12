@@ -13,24 +13,39 @@ export default function Carousel() {
   );
   const videoRef = useRef(null);
 
-  // React không phải lúc nào cũng set thật thuộc tính `muted` lên DOM -> mobile
-  // (iOS/Android) chặn autoplay. Ép muted + gọi play() để banner tự chạy.
+  // Set muted NGAY khi <video> gắn vào DOM (trước khi iOS xét quyền autoplay).
+  const attachVideo = (el) => {
+    videoRef.current = el;
+    if (el) {
+      el.muted = true;
+      el.defaultMuted = true;
+      el.setAttribute("muted", "");
+    }
+  };
+
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
     v.muted = true;
-    v.defaultMuted = true;
-    const tryPlay = () => {
+
+    const play = () => {
       const p = v.play();
       if (p && typeof p.catch === "function") p.catch(() => {});
     };
-    tryPlay();
-    // Một số máy cần play lại khi đã có dữ liệu / khi quay lại tab
-    v.addEventListener("loadeddata", tryPlay);
-    v.addEventListener("canplay", tryPlay);
+    play();
+    v.addEventListener("loadeddata", play);
+    v.addEventListener("canplay", play);
+
+    // Fallback iOS: chạm/bấm màn hình lần đầu -> phát (cử chỉ người dùng luôn được phép)
+    const onGesture = () => play();
+    document.addEventListener("touchstart", onGesture, { passive: true });
+    document.addEventListener("click", onGesture);
+
     return () => {
-      v.removeEventListener("loadeddata", tryPlay);
-      v.removeEventListener("canplay", tryPlay);
+      v.removeEventListener("loadeddata", play);
+      v.removeEventListener("canplay", play);
+      document.removeEventListener("touchstart", onGesture);
+      document.removeEventListener("click", onGesture);
     };
   }, [src]);
 
@@ -38,7 +53,7 @@ export default function Carousel() {
     <div className="container">
       <div className="relative h-[60vh] max-h-[560px] min-h-[360px] w-full overflow-hidden rounded-3xl bg-gray-900">
         <video
-          ref={videoRef}
+          ref={attachVideo}
           key={src}
           src={src}
           autoPlay
