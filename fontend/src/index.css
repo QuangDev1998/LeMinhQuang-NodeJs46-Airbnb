@@ -53,6 +53,19 @@ html {
   animation: popIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* Ken Burns: phóng nhẹ ảnh hero cho có chiều sâu */
+@keyframes heroZoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+.hero-zoom {
+  animation: heroZoom 18s ease-in-out infinite alternate;
+}
+
 /* Hover nhấc thẻ lên */
 .hover-lift {
   transition: transform 0.25s ease, box-shadow 0.25s ease;
@@ -69,7 +82,8 @@ html {
   }
   .page-fade,
   .reveal,
-  .pop-in {
+  .pop-in,
+  .hero-zoom {
     animation: none;
   }
 }

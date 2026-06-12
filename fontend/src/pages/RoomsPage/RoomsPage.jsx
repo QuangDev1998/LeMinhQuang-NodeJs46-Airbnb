@@ -47,7 +47,7 @@ export default function RoomsPage() {
       );
     }
     return roomClone.map((phong, i) => (
-      <div data-aos="zoom-in" key={phong.id}>
+      <div key={phong.id}>
         <RoomCard
           room={phong}
           onClick={() => handleRoomClick(phong.id)}
@@ -59,7 +59,7 @@ export default function RoomsPage() {
   };
 
   return (
-    <div className={`${themeMode} pt-24`}>
+    <div className={`${themeMode} pt-36 md:pt-24`}>
       <CategoryBar selected={category} onSelect={setCategory} />
       <div className="container py-8 pb-16">
         <h1 className="mb-6 text-2xl font-bold">

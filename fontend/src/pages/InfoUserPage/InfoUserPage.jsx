@@ -87,7 +87,7 @@ export default function InfoUserPage() {
   ];
 
   return (
-    <div className={`${themeMode} min-h-screen bg-gray-50 pt-20 pb-16`}>
+    <div className={`${themeMode} min-h-screen bg-gray-50 pt-36 pb-16 md:pt-24`}>
       {/* ===== Hồ sơ - banner + avatar ===== */}
       <div className="container">
         <div className="reveal relative mt-4 overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-airbnb">

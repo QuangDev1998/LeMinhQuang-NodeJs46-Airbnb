@@ -118,7 +118,7 @@ export default function RoomDetailPage() {
 
   return (
     <div className={`${themeMode}`}>
-      <div className="container space-y-6 pt-28 pb-16">
+      <div className="container space-y-6 pt-36 pb-16 md:pt-28">
         {/* Tiêu đề + hành động */}
         <div className="space-y-2">
           <h1 className="text-2xl font-extrabold md:text-3xl">

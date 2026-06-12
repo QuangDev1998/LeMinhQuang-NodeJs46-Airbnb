@@ -51,6 +51,7 @@ export default function TempHeader() {
   const [locations, setLocations] = useState([]);
   const [openSearch, setOpenSearch] = useState(false); // popover của pill thu gọn
   const [openSearchBig, setOpenSearchBig] = useState(false); // popover của bộ lọc mở rộng
+  const [openSearchMobile, setOpenSearchMobile] = useState(false); // popover bộ lọc mobile
   const [selectedLocationId, setSelectedLocationId] = useState(null);
   // Bộ lọc chỉ mở rộng (to) ở trang chủ khi chưa cuộn; còn lại là pill thu gọn
   const isHome = location.pathname === "/";
@@ -88,6 +89,7 @@ export default function TempHeader() {
   const handleSearchFilter = () => {
     setOpenSearch(false);
     setOpenSearchBig(false);
+    setOpenSearchMobile(false);
     // Có chọn địa điểm -> lọc theo vị trí; không chọn -> xem tất cả
     navigate(selectedLocationId ? `/rooms/${selectedLocationId}` : "/rooms");
   };
@@ -288,7 +290,7 @@ export default function TempHeader() {
           <button
             onClick={() => navigate("/favorites")}
             aria-label="Yêu thích"
-            className="hidden h-10 w-10 items-center justify-center rounded-full text-gray-700 transition hover:bg-gray-100 sm:flex"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-gray-700 transition hover:bg-gray-100"
           >
             <HeartOutlined />
           </button>
@@ -452,15 +454,25 @@ export default function TempHeader() {
         </Popover>
       </div>
 
-      {/* Thanh tìm kiếm rút gọn cho mobile */}
+      {/* Thanh tìm kiếm cho mobile - mở bộ lọc địa điểm/ngày/khách */}
       <div className="border-t border-gray-100 px-4 pb-3 pt-2 md:hidden">
-        <button
-          onClick={() => navigate("/rooms")}
-          className="flex w-full items-center gap-3 rounded-full border border-gray-200 px-4 py-2.5 text-sm shadow-sm"
+        <Popover
+          content={searchContent}
+          trigger="click"
+          placement="bottom"
+          open={openSearchMobile}
+          onOpenChange={setOpenSearchMobile}
         >
-          <SearchOutlined className="text-[#ff385c]" />
-          <span className="font-semibold text-gray-800">Tìm kiếm điểm đến</span>
-        </button>
+          <button className="flex w-full items-center gap-3 rounded-full border border-gray-200 bg-white px-4 py-2.5 text-sm shadow-sm">
+            <SearchOutlined className="text-[#ff385c]" />
+            <span className="truncate font-semibold text-gray-800">
+              {selectedLocationId ? selectedLocationName : "Tìm kiếm điểm đến"}
+            </span>
+            <span className="ml-auto text-xs text-gray-400">
+              {dateChosen ? dateLabel : ""} · {soLuongKhach} khách
+            </span>
+          </button>
+        </Popover>
       </div>
 
       <Modal

@@ -25,7 +25,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoginData } from "./redux/slices/userSlice";
 import { fetchFavoriteIdsAction } from "./redux/slices/favoriteSlice";
 
-AOS.init();
+// disable: 'mobile' -> KHÔNG áp opacity:0 trên điện thoại (tránh ảnh/nội dung
+// bị ẩn khi animation không kích hoạt). once: true -> chạy 1 lần, không lặp.
+AOS.init({ once: true, duration: 700, disable: "mobile" });
 function App() {
   const dispatch = useDispatch();
   const { themeMode } = useSelector((state) => state.darkModeSlice);

@@ -74,7 +74,7 @@ export default function RoomsVitri() {
   };
 
   return (
-    <div className={`${themeMode} pt-24`}>
+    <div className={`${themeMode} pt-36 md:pt-24`}>
       <div className="container pb-16">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           <div>

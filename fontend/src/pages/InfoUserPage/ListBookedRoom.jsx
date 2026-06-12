@@ -81,10 +81,7 @@ export default function ListBookedRoom() {
       { ok: room.hoBoi, label: "Hồ bơi" },
     ];
     return (
-      <div
-        data-aos="zoom-in"
-        className="hover-lift group relative overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-airbnb"
-      >
+      <div className="hover-lift group relative overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-airbnb">
         {/* Nút thao tác */}
         <div className="absolute right-3 top-3 z-10 flex gap-2">
           <button

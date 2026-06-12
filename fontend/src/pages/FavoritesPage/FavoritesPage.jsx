@@ -30,7 +30,7 @@ export default function FavoritesPage() {
 
   if (!user) {
     return (
-      <div className={`${themeMode} pt-32 pb-20`}>
+      <div className={`${themeMode} pt-36 pb-20 md:pt-32`}>
         <div className="container text-center">
           <HeartOutlined className="text-5xl text-[#ff385c]" />
           <h1 className="mt-4 text-2xl font-bold">Danh sách yêu thích</h1>
@@ -43,7 +43,7 @@ export default function FavoritesPage() {
   }
 
   return (
-    <div className={`${themeMode} pt-28 pb-16`}>
+    <div className={`${themeMode} pt-36 pb-16 md:pt-28`}>
       <div className="container">
         <h1 className="mb-2 text-3xl font-bold">Danh sách yêu thích</h1>
         <p className="mb-6 text-gray-500">
