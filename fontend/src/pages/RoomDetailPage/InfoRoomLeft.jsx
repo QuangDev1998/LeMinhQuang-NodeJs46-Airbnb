@@ -6,43 +6,7 @@ import {
   CalendarOutlined,
   CrownFilled,
 } from "@ant-design/icons";
-
-// Một nhánh lá nguyệt quế (kiểu huy hiệu "Khách yêu thích" của Airbnb).
-// flip=true để lật thành nhánh đối xứng bên kia.
-function Laurel({ flip }) {
-  // hình 1 chiếc lá (hướng sang phải)
-  const leaf = "M0 0 C 5 -4.5, 13 -4.5, 17 0 C 13 4.5, 5 4.5, 0 0 Z";
-  // vị trí + góc xoay của từng lá dọc theo cành cong
-  const leaves = [
-    [40, 106, -118],
-    [34, 94, -112],
-    [29, 82, -106],
-    [26, 70, -100],
-    [25, 58, -94],
-    [27, 46, -86],
-    [31, 34, -78],
-    [37, 23, -70],
-    [44, 14, -62],
-  ];
-  return (
-    <svg
-      viewBox="0 0 60 120"
-      className={`h-24 w-auto text-gray-900 ${flip ? "-scale-x-100" : ""}`}
-      fill="currentColor"
-    >
-      <path
-        d="M47 114 C 32 96 22 60 40 8"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-      />
-      {leaves.map(([x, y, r], i) => (
-        <path key={i} d={leaf} transform={`translate(${x} ${y}) rotate(${r})`} />
-      ))}
-    </svg>
-  );
-}
+import laurel from "../../assets/image/guest-favorite-laurel.png";
 
 export default function InfoRoomLeft() {
   const { infoRoom, listComment } = useSelector(
@@ -124,11 +88,11 @@ export default function InfoRoomLeft() {
         <div className="py-6">
           <div className="flex flex-col items-center rounded-2xl border border-gray-200 px-4 py-6">
             <div className="flex items-center justify-center gap-1">
-              <Laurel flip />
+              <img src={laurel} alt="" className="h-24 w-auto dark:invert" />
               <span className="text-5xl font-extrabold leading-none text-gray-900">
                 {rating}
               </span>
-              <Laurel />
+              <img src={laurel} alt="" className="h-24 w-auto -scale-x-100 dark:invert" />
             </div>
             <p className="mt-3 text-lg font-bold text-gray-900">
               Được khách yêu thích
