@@ -113,8 +113,7 @@ export default function TopPhong() {
     },
   };
   return (
-    <div className="h-52 w-full border-2 p-5 rounded-lg shadow-sm">
-      <h1 className="font-bold">Top phòng</h1>
+    <div className="h-60 w-full">
       <Bar data={barChartData} options={options} />
     </div>
   );

@@ -13,9 +13,10 @@ import {
   InputNumber,
   Switch,
 } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, HomeOutlined } from "@ant-design/icons";
 import { phongServices } from "../../services/phongServices";
 import { fetchListPhongAction } from "../../redux/thunks/quanLyPhongThunks";
+import AdminModalHeader from "../../components/Admin/AdminModalHeader";
 
 export default function ModalQLPhong({ valueInput }) {
   const { isModalOpen, currentPage } = useSelector(
@@ -47,9 +48,10 @@ export default function ModalQLPhong({ valueInput }) {
     phongServices
       .createPhong(valuesClone, token)
       .then((result) => {
-        // => có id => gọi api up hình
+        // createPhong trả mapRoom (không bọc content) -> lấy id linh hoạt
+        const newId = result.data?.content?.id ?? result.data?.id;
         phongServices
-          .uploadHinhPhong(formData, result.data.content.id, token)
+          .uploadHinhPhong(formData, newId, token)
           .then((result) => {
             // => update list
             dispatch(fetchListPhongAction({ currentPage, valueInput }));
@@ -87,18 +89,18 @@ export default function ModalQLPhong({ valueInput }) {
   return (
     <div>
       <Modal
+        className="admin-modal"
+        centered
+        width={760}
         closable={false}
         open={isModalOpen}
-        okText="Thêm"
+        okText="Thêm phòng"
         cancelText="Hủy"
         okButtonProps={{
           autoFocus: true,
           htmlType: "submit",
-          style: {
-            backgroundColor: "rgb(254 107 110)",
-          },
+          style: { backgroundColor: "#ff385c", borderColor: "#ff385c" },
         }}
-        prop
         onCancel={hideModal}
         destroyOnClose
         modalRender={(dom) => (
@@ -113,7 +115,11 @@ export default function ModalQLPhong({ valueInput }) {
           </Form>
         )}
       >
-        <h1 className="my-3 text-2xl text-center">Thêm phòng thuê</h1>
+        <AdminModalHeader
+          icon={<HomeOutlined />}
+          title="Thêm phòng thuê"
+          subtitle="Tạo một chỗ ở mới với đầy đủ thông tin & tiện nghi"
+        />
         {/* hinhAnh */}
         <Form.Item
           label="Thêm hình"
@@ -287,7 +293,9 @@ export default function ModalQLPhong({ valueInput }) {
             </Form.Item>
           </Col>
         </Row>
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="mt-2 rounded-2xl border border-gray-100 bg-gray-50 p-4">
+          <p className="mb-2 text-sm font-bold text-gray-700">Tiện nghi</p>
+          <div className="grid grid-cols-2 gap-x-4 sm:grid-cols-3">
           {/* mayGiat */}
           <Form.Item name="mayGiat" label="Máy giặt" initialValue={true}>
             <Switch
@@ -360,6 +368,7 @@ export default function ModalQLPhong({ valueInput }) {
               defaultChecked
             />
           </Form.Item>
+          </div>
         </div>
       </Modal>
     </div>

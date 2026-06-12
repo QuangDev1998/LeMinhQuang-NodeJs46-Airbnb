@@ -11,7 +11,7 @@ import {
   message,
 } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-
+import { EditOutlined } from "@ant-design/icons";
 import { nguoiDungServices } from "../../services/nguoiDungServices";
 import dayjs from "dayjs";
 import { setIsModalEditOpenAction } from "../../redux/slices/quanLyNguoiDungSlice";
@@ -19,6 +19,7 @@ import {
   fetchListUserAction,
   fetchUserInfoAction,
 } from "../../redux/thunks/quanLyNguoiDungThunks";
+import AdminModalHeader from "../../components/Admin/AdminModalHeader";
 
 export default function ModalEditQLNguoiDung({ valueInput }) {
   const { isModalEditOpen, userInfo, currentPage } = useSelector(
@@ -60,7 +61,7 @@ export default function ModalEditQLNguoiDung({ valueInput }) {
         phone: userInfo.phone,
         email: userInfo.email,
         gender: userInfo.gender,
-        birthday: dayjs(userInfo.birthday),
+        birthday: userInfo.birth_day ? dayjs(userInfo.birth_day) : null,
         role: userInfo.role,
       };
     }
@@ -68,6 +69,9 @@ export default function ModalEditQLNguoiDung({ valueInput }) {
   return (
     <div>
       <Modal
+        className="admin-modal"
+        centered
+        width={640}
         closable={false}
         open={isModalEditOpen}
         okText="Cập nhật"
@@ -75,11 +79,8 @@ export default function ModalEditQLNguoiDung({ valueInput }) {
         okButtonProps={{
           autoFocus: true,
           htmlType: "submit",
-          style: {
-            backgroundColor: "rgb(254 107 110)",
-          },
+          style: { backgroundColor: "#ff385c", borderColor: "#ff385c" },
         }}
-        prop
         onCancel={hideModal}
         destroyOnClose
         modalRender={(dom) => (
@@ -95,7 +96,11 @@ export default function ModalEditQLNguoiDung({ valueInput }) {
           </Form>
         )}
       >
-        <h1 className="my-3 text-2xl text-center">Cập nhật người dùng</h1>
+        <AdminModalHeader
+          icon={<EditOutlined />}
+          title="Cập nhật người dùng"
+          subtitle="Chỉnh sửa thông tin tài khoản"
+        />
         <Row gutter={24}>
           {/* Col left */}
           <Col className="gutter-row" span={24} md={12}>

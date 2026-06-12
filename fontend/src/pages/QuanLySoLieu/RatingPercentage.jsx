@@ -39,8 +39,7 @@ export default function RatingPercentage() {
     maintainAspectRatio: false,
     plugins: {
       title: {
-        display: true,
-        text: "Rating",
+        display: false,
       },
       legend: {
         position: "bottom",
@@ -66,8 +65,8 @@ export default function RatingPercentage() {
     },
   };
   return (
-    <div style={{ width: "100%", height: "400px" }}>
-      <Pie data={pieChartData} options={options} />;
+    <div className="mx-auto h-60 w-full">
+      <Pie data={pieChartData} options={options} />
     </div>
   );
 }

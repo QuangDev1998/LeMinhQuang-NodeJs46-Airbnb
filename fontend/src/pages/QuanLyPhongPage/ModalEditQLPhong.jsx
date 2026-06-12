@@ -13,11 +13,13 @@ import {
   InputNumber,
   Switch,
 } from "antd";
+import { HomeOutlined } from "@ant-design/icons";
 import { phongServices } from "../../services/phongServices";
 import {
   fetchListPhongAction,
   fetchPhongInfoAction,
 } from "../../redux/thunks/quanLyPhongThunks";
+import AdminModalHeader from "../../components/Admin/AdminModalHeader";
 
 export default function ModalEditQLPhong({ valueInput }) {
   const { isModalEditOpen, phongInfo, currentPage } = useSelector(
@@ -66,7 +68,8 @@ export default function ModalEditQLPhong({ valueInput }) {
       phongServices
         .uploadHinhPhong(formData, values.id, token)
         .then((result) => {
-          values.hinhAnh = result.data.content.hinhAnh;
+          values.hinhAnh =
+            result.data?.content?.hinhAnh ?? result.data?.hinhAnh;
           // => gọi api edit
           phongServices
             .editPhong(values.id, values, token)
@@ -124,13 +127,16 @@ export default function ModalEditQLPhong({ valueInput }) {
         doXe: phongInfo.doXe,
         hoBoi: phongInfo.hoBoi,
         banUi: phongInfo.banUi,
-        maViTri: phongInfo.maViTri,
+        maViTri: phongInfo.viTriId,
       };
     }
   };
   return (
     <div>
       <Modal
+        className="admin-modal"
+        centered
+        width={760}
         closable={false}
         open={isModalEditOpen}
         okText="Cập nhật"
@@ -138,11 +144,8 @@ export default function ModalEditQLPhong({ valueInput }) {
         okButtonProps={{
           autoFocus: true,
           htmlType: "submit",
-          style: {
-            backgroundColor: "rgb(254 107 110)",
-          },
+          style: { backgroundColor: "#ff385c", borderColor: "#ff385c" },
         }}
-        prop
         onCancel={hideModal}
         destroyOnClose
         modalRender={(dom) => (
@@ -158,11 +161,19 @@ export default function ModalEditQLPhong({ valueInput }) {
           </Form>
         )}
       >
-        <h1 className="my-3 text-2xl text-center">Cập nhật phòng thuê</h1>
-        <img src={phongInfo?.hinhAnh} alt="" className="h-48 w-full" />
+        <AdminModalHeader
+          icon={<HomeOutlined />}
+          title="Cập nhật phòng thuê"
+          subtitle="Chỉnh sửa thông tin & tiện nghi của phòng"
+        />
+        <img
+          src={phongInfo?.hinhAnh}
+          alt=""
+          className="mb-4 h-44 w-full rounded-xl object-cover"
+        />
         {/* hinhAnh */}
         <Form.Item
-          label=""
+          label="Đổi hình ảnh"
           name="hinhAnh"
           valuePropName="fileList"
           getValueFromEvent={normFile}
@@ -331,7 +342,9 @@ export default function ModalEditQLPhong({ valueInput }) {
             </Form.Item>
           </Col>
         </Row>
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="mt-2 rounded-2xl border border-gray-100 bg-gray-50 p-4">
+          <p className="mb-2 text-sm font-bold text-gray-700">Tiện nghi</p>
+          <div className="grid grid-cols-2 gap-x-4 sm:grid-cols-3">
           {/* mayGiat */}
           <Form.Item name="mayGiat" label="Máy giặt">
             <Switch checkedChildren="Có" unCheckedChildren="Không" />
@@ -368,6 +381,7 @@ export default function ModalEditQLPhong({ valueInput }) {
           <Form.Item name="banUi" label="Bàn ủi">
             <Switch checkedChildren="Có" unCheckedChildren="Không" />
           </Form.Item>
+          </div>
         </div>
       </Modal>
     </div>

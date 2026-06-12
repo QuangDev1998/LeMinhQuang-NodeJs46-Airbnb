@@ -10,6 +10,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  Filler,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { ConfigProvider, DatePicker } from "antd";
@@ -30,6 +31,7 @@ Chartjs.register(
   Title,
   Tooltip,
   Legend,
+  Filler,
   ChartDataLabels
 );
 
@@ -108,10 +110,14 @@ export default function DoanhThu() {
     datasets: [
       {
         label: "$",
-
         data: [min, avg, max],
-        backgroundColor: "rgb(254, 107, 110)",
-        borderColor: "rgb(175, 225, 175)",
+        backgroundColor: "rgba(255, 56, 92, 0.12)",
+        borderColor: "#ff385c",
+        pointBackgroundColor: "#ff385c",
+        pointRadius: 4,
+        borderWidth: 2,
+        tension: 0.35,
+        fill: true,
       },
     ],
   };
@@ -154,26 +160,37 @@ export default function DoanhThu() {
     },
   };
   return (
-    <div className="p-5 border-2 rounded-lg space-y-3">
-      <h1 className="font-bold">Doanh thu</h1>
-      <ConfigProvider locale={vi_VN}>
-        <RangePicker
-          format={"DD/MM/YYYY"}
-          onChange={onChange}
-          maxDate={dayjs(new Date())}
-        />
-      </ConfigProvider>
-      <div className="flex  gap-3">
-        <div className="border-2 rounded-lg p-5 shadow-sm">
-          <h1 className="font-bold">Tổng doanh thu</h1>
-          <p>{tongDoanhThu} $</p>
+    <div className="space-y-4">
+      <div>
+        <p className="mb-2 text-sm font-semibold text-gray-600">
+          Chọn khoảng thời gian
+        </p>
+        <ConfigProvider locale={vi_VN}>
+          <RangePicker
+            className="w-full sm:w-auto"
+            format={"DD/MM/YYYY"}
+            onChange={onChange}
+            maxDate={dayjs(new Date())}
+          />
+        </ConfigProvider>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="rounded-2xl bg-emerald-500/10 p-4">
+          <p className="text-sm text-gray-500">Tổng doanh thu</p>
+          <p className="mt-1 text-2xl font-extrabold text-emerald-600">
+            ${Number(tongDoanhThu || 0).toLocaleString("en-US")}
+          </p>
         </div>
-        <div className="border-2 rounded-lg p-5 shadow-sm">
-          <h1 className="font-bold">Đơn đặt phòng</h1>
-          <p>{donDatPhong} đơn</p>
+        <div className="rounded-2xl bg-blue-500/10 p-4">
+          <p className="text-sm text-gray-500">Đơn đặt phòng</p>
+          <p className="mt-1 text-2xl font-extrabold text-blue-600">
+            {donDatPhong || 0}
+          </p>
         </div>
       </div>
-      <div className="h-80 border-2 rounded-lg shadow-sm p-5">
+
+      <div className="h-72 w-full">
         <Line data={lineChartData} options={options} />
       </div>
     </div>

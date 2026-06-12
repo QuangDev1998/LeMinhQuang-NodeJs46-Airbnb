@@ -86,9 +86,10 @@ export default function ListPhong({ valueInput }) {
       key: "action",
       render: (_, dataObject) => {
         return (
-          <div>
+          <div className="flex items-center gap-2">
             {/* nút edit */}
-            <EditOutlined
+            <button
+              title="Sửa"
               onClick={() => {
                 dispatch(fetchPhongInfoAction(dataObject.id))
                   .then((result) => {
@@ -98,8 +99,10 @@ export default function ListPhong({ valueInput }) {
                     console.error(err);
                   });
               }}
-              className=" text-2xl hover:cursor-pointer mr-2"
-            />
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition hover:bg-blue-50 hover:text-blue-500"
+            >
+              <EditOutlined />
+            </button>
             {/* Popconfirm bọc nút xóa => confirm => chạy hàm xóa */}
             <Popconfirm
               title="Xoá phòng"
@@ -111,7 +114,12 @@ export default function ListPhong({ valueInput }) {
                 danger: "danger",
               }}
             >
-              <DeleteOutlined className=" text-2xl hover:cursor-pointer " />
+              <button
+                title="Xoá"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition hover:bg-red-50 hover:text-red-500"
+              >
+                <DeleteOutlined />
+              </button>
             </Popconfirm>
           </div>
         );
@@ -122,7 +130,8 @@ export default function ListPhong({ valueInput }) {
   const renderTinhThanh = (id) => {
     const index = listViTri.findIndex((viTri) => viTri.id === id);
     if (index !== -1) {
-      return listViTri[index].tenViTri;
+      // listViTri lấy từ /vi-tri (snake_case)
+      return listViTri[index].ten_vi_tri;
     }
   };
   const renderListPhong = () => {
@@ -132,7 +141,8 @@ export default function ListPhong({ valueInput }) {
         id: phong.id,
         tenPhong: phong.tenPhong,
         moTa: phong.moTa,
-        tinhThanh: renderTinhThanh(phong.maViTri),
+        // mapRoom trả viTriId (không phải maViTri)
+        tinhThanh: renderTinhThanh(phong.viTriId),
         hinhAnh: phong.hinhAnh,
       };
     });

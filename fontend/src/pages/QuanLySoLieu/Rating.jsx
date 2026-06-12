@@ -39,10 +39,10 @@ export default function Rating() {
           twoStar.length,
           oneStar.length,
         ],
-        backgroundColor: "rgb(255,255,102)",
-        borderWidth: 1,
-        barPercentage: 0.8,
-        borderRadius: "32",
+        backgroundColor: "rgba(251, 191, 36, 0.85)",
+        borderWidth: 0,
+        barPercentage: 0.75,
+        borderRadius: 10,
       },
     ],
   };
@@ -52,11 +52,10 @@ export default function Rating() {
     indexAxis: "y",
     plugins: {
       title: {
-        display: true,
-        text: "Rating",
+        display: false,
       },
       legend: {
-        position: "bottom",
+        display: false,
       },
       tooltip: {
         enabled: true,
@@ -88,7 +87,7 @@ export default function Rating() {
     },
   };
   return (
-    <div className="h-52 w-full border-2 p-5 rounded-lg shadow-sm">
+    <div className="h-60 w-full">
       <Bar data={barChartData} options={options} />
     </div>
   );

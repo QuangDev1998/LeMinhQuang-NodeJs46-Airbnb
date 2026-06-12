@@ -3,8 +3,9 @@ import { Modal, Form, Input, message, Upload } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsModalOpenAction } from "../../redux/slices/quanLyViTriSlice";
 import { viTriServices } from "../../services/viTriServices";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, EnvironmentOutlined } from "@ant-design/icons";
 import { fetchListViTriAction } from "../../redux/thunks/quanLyViTriThunks";
+import AdminModalHeader from "../../components/Admin/AdminModalHeader";
 
 export default function ModalQLViTri({ valueInput }) {
   const { isModalOpen, currentPage } = useSelector(
@@ -59,18 +60,17 @@ export default function ModalQLViTri({ valueInput }) {
   return (
     <div>
       <Modal
+        className="admin-modal"
+        centered
         closable={false}
         open={isModalOpen}
-        okText="Thêm"
+        okText="Thêm vị trí"
         cancelText="Hủy"
         okButtonProps={{
           autoFocus: true,
           htmlType: "submit",
-          style: {
-            backgroundColor: "rgb(254 107 110)",
-          },
+          style: { backgroundColor: "#ff385c", borderColor: "#ff385c" },
         }}
-        prop
         onCancel={hideModal}
         destroyOnClose
         modalRender={(dom) => (
@@ -85,7 +85,11 @@ export default function ModalQLViTri({ valueInput }) {
           </Form>
         )}
       >
-        <h1 className="my-3 text-2xl text-center">Thêm vị trí mới</h1>
+        <AdminModalHeader
+          icon={<EnvironmentOutlined />}
+          title="Thêm vị trí mới"
+          subtitle="Tạo địa điểm cho thuê mới"
+        />
         {/* hinhAnh */}
         <Form.Item
           label="Thêm hình"

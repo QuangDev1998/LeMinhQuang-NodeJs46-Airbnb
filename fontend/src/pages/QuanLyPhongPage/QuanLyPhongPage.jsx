@@ -1,11 +1,13 @@
 import React, { useRef, useState } from "react";
 import { Input } from "antd";
+import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import ListPhong from "./ListPhong";
 import { fetchListPhongAction } from "../../redux/thunks/quanLyPhongThunks";
 import { setIsModalOpenAction } from "../../redux/slices/quanLyPhongSlice";
 import ModalQLPhong from "./ModalQLPhong";
 import ModalEditQLPhong from "./ModalEditQLPhong";
+import AdminHeader from "../../components/Admin/AdminHeader";
 
 export default function QuanLyPhongPage() {
   const [valueInput, setValueInput] = useState("");
@@ -28,28 +30,34 @@ export default function QuanLyPhongPage() {
   };
 
   return (
-    <div>
-      <div className="md:flex justify-around py-5">
-        <h1 className="text-2xl font-bold">Quản lý phòng</h1>
-        <button
-          onClick={() => dispatch(setIsModalOpenAction(true))}
-          className="button-primary"
-        >
-          + Thêm phòng mới
-        </button>
-      </div>
-      {/* input search */}
-      <Input
-        className="p-2.5 my-3"
-        placeholder="Tìm tên phòng"
-        onChange={handleChangeSearch}
-        value={valueInput}
+    <div className="space-y-5">
+      <AdminHeader
+        title="Quản lý phòng"
+        subtitle="Thêm, tìm kiếm và chỉnh sửa danh sách phòng cho thuê"
+        action={
+          <button
+            onClick={() => dispatch(setIsModalOpenAction(true))}
+            className="flex items-center gap-2 rounded-full bg-[#ff385c] px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+          >
+            <PlusOutlined /> Thêm phòng
+          </button>
+        }
       />
-      {/* list phòng */}
-      <ListPhong valueInput={valueInput} />
-      {/* modal add */}
+
+      <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm md:p-5">
+        <Input
+          allowClear
+          size="large"
+          prefix={<SearchOutlined className="text-gray-400" />}
+          className="mb-4 max-w-md"
+          placeholder="Tìm tên phòng..."
+          onChange={handleChangeSearch}
+          value={valueInput}
+        />
+        <ListPhong valueInput={valueInput} />
+      </div>
+
       <ModalQLPhong valueInput={valueInput} />
-      {/* modal edit */}
       <ModalEditQLPhong valueInput={valueInput} />
     </div>
   );

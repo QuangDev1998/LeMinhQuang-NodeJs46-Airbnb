@@ -6,7 +6,9 @@ import { fetchListBookingAction } from "../../redux/thunks/quanLyBookingThunks";
 import { setListBookingAction } from "../../redux/slices/quanLyBookingSlice";
 import { bookingServices } from "../../services/bookingServices";
 import { Input } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import ModalEditQLBooking from "./ModalEditQLBooking";
+import AdminHeader from "../../components/Admin/AdminHeader";
 
 export default function QuanLyBookingPage() {
   const dispatch = useDispatch();
@@ -42,23 +44,28 @@ export default function QuanLyBookingPage() {
     }
   };
   return (
-    <div>
-      <div className="flex justify-around py-5">
-        <h1 className="text-2xl font-bold">Quản lý Booking</h1>
+    <div className="space-y-5">
+      <AdminHeader
+        title="Quản lý booking"
+        subtitle="Tra cứu và chỉnh sửa các đơn đặt phòng theo mã người dùng"
+      />
+
+      <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm md:p-5">
+        <Input
+          allowClear
+          size="large"
+          prefix={<SearchOutlined className="text-gray-400" />}
+          className="mb-4 max-w-md"
+          placeholder="Nhập mã người dùng..."
+          onChange={handleChangeSearch}
+          value={valueInput}
+        />
+        <ListBooking
+          fetchSearchBooking={fetchSearchBooking}
+          valueInput={valueInput}
+        />
       </div>
-      {/* input search */}
-      <Input
-        className="p-2.5 my-3"
-        placeholder="Nhập mã người dùng..."
-        onChange={handleChangeSearch}
-        value={valueInput}
-      />
-      {/* list booking */}
-      <ListBooking
-        fetchSearchBooking={fetchSearchBooking}
-        valueInput={valueInput}
-      />
-      {/* modal edit */}
+
       <ModalEditQLBooking
         fetchSearchBooking={fetchSearchBooking}
         valueInput={valueInput}

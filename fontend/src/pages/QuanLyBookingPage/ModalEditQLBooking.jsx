@@ -1,10 +1,12 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Form, Modal, Input, message, InputNumber, DatePicker } from "antd";
+import { CalendarOutlined } from "@ant-design/icons";
 import { setIsModalEditOpenAction } from "../../redux/slices/quanLyBookingSlice";
 import dayjs from "dayjs";
 import { bookingServices } from "../../services/bookingServices";
 import { fetchBookingInfoAction } from "../../redux/thunks/quanLyBookingThunks";
+import AdminModalHeader from "../../components/Admin/AdminModalHeader";
 
 export default function ModalEditQLBooking({ fetchSearchBooking, valueInput }) {
   const { isModalEditOpen, bookingInfo } = useSelector(
@@ -46,6 +48,8 @@ export default function ModalEditQLBooking({ fetchSearchBooking, valueInput }) {
 
   return (
     <Modal
+      className="admin-modal"
+      centered
       closable={false}
       open={isModalEditOpen}
       okText="Cập nhật"
@@ -55,7 +59,7 @@ export default function ModalEditQLBooking({ fetchSearchBooking, valueInput }) {
       okButtonProps={{
         autoFocus: true,
         htmlType: "submit",
-        style: { backgroundColor: "rgb(254 107 110)" },
+        style: { backgroundColor: "#ff385c", borderColor: "#ff385c" },
       }}
       modalRender={(dom) => (
         <Form
@@ -69,7 +73,11 @@ export default function ModalEditQLBooking({ fetchSearchBooking, valueInput }) {
         </Form>
       )}
     >
-      <h1 className="my-3 text-2xl text-center">Cập nhật booking</h1>
+      <AdminModalHeader
+        icon={<CalendarOutlined />}
+        title="Cập nhật booking"
+        subtitle="Chỉnh sửa thông tin đơn đặt phòng"
+      />
 
       <Form.Item name="id" label="Mã booking">
         <Input disabled />

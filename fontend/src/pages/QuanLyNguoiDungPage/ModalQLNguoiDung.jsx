@@ -11,10 +11,12 @@ import {
   message,
 } from "antd";
 import { useDispatch, useSelector } from "react-redux";
+import { UserAddOutlined } from "@ant-design/icons";
 import { setIsModalOpenAction } from "../../redux/slices/quanLyNguoiDungSlice";
 import { nguoiDungServices } from "../../services/nguoiDungServices";
 import dayjs from "dayjs";
 import { fetchListUserAction } from "../../redux/thunks/quanLyNguoiDungThunks";
+import AdminModalHeader from "../../components/Admin/AdminModalHeader";
 
 export default function ModalQLNguoiDung({ valueInput }) {
   const { isModalOpen, currentPage } = useSelector(
@@ -51,18 +53,18 @@ export default function ModalQLNguoiDung({ valueInput }) {
   return (
     <div>
       <Modal
+        className="admin-modal"
+        centered
+        width={640}
         closable={false}
         open={isModalOpen}
-        okText="Thêm"
+        okText="Thêm người dùng"
         cancelText="Hủy"
         okButtonProps={{
           autoFocus: true,
           htmlType: "submit",
-          style: {
-            backgroundColor: "rgb(254 107 110)",
-          },
+          style: { backgroundColor: "#ff385c", borderColor: "#ff385c" },
         }}
-        prop
         onCancel={hideModal}
         destroyOnClose
         modalRender={(dom) => (
@@ -77,7 +79,11 @@ export default function ModalQLNguoiDung({ valueInput }) {
           </Form>
         )}
       >
-        <h1 className="my-3 text-2xl text-center">Thêm người dùng mới</h1>
+        <AdminModalHeader
+          icon={<UserAddOutlined />}
+          title="Thêm người dùng mới"
+          subtitle="Tạo tài khoản người dùng cho hệ thống"
+        />
         <Row gutter={24}>
           {/* Col left */}
           <Col className="gutter-row" span={24} md={12}>

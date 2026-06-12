@@ -50,15 +50,18 @@ export default function ListBooking({ fetchSearchBooking, valueInput }) {
       key: "action",
       fixed: "right",
       render: (_, record) => (
-        <div>
-          <EditOutlined
+        <div className="flex items-center gap-2">
+          <button
+            title="Sửa"
             onClick={() => {
               dispatch(fetchBookingInfoAction(record.id)).then(() => {
                 dispatch(setIsModalEditOpenAction(true));
               });
             }}
-            className="text-2xl cursor-pointer mr-2"
-          />
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition hover:bg-blue-50 hover:text-blue-500"
+          >
+            <EditOutlined />
+          </button>
           <Popconfirm
             title="Xoá đặt phòng"
             description="Bạn có chắc muốn xóa đặt phòng?"
@@ -67,7 +70,12 @@ export default function ListBooking({ fetchSearchBooking, valueInput }) {
             cancelText="Không"
             okButtonProps={{ danger: true }}
           >
-            <DeleteOutlined className="text-2xl cursor-pointer" />
+            <button
+              title="Xoá"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition hover:bg-red-50 hover:text-red-500"
+            >
+              <DeleteOutlined />
+            </button>
           </Popconfirm>
         </div>
       ),

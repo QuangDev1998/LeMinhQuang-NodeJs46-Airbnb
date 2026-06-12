@@ -43,7 +43,9 @@ export default function GiaPhong() {
       {
         label: "$",
         data: [giaMin, calculateAverage(), giaMax],
-        backgroundColor: "rgb(254, 107, 110)",
+        backgroundColor: ["#fbbf24", "#ff385c", "#10b981"],
+        borderRadius: 10,
+        barPercentage: 0.6,
       },
     ],
   };
@@ -52,8 +54,7 @@ export default function GiaPhong() {
     maintainAspectRatio: false,
     plugins: {
       title: {
-        display: true,
-        text: "Giá phòng / đêm",
+        display: false,
       },
       legend: {
         display: false,
@@ -84,7 +85,7 @@ export default function GiaPhong() {
     },
   };
   return (
-    <div className="h-52 w-full border-2 p-5 rounded-lg shadow-sm">
+    <div className="h-60 w-full">
       <Bar data={barChartData} options={options} />
     </div>
   );

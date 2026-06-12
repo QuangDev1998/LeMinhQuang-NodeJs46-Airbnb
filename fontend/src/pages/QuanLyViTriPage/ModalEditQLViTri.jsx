@@ -1,12 +1,14 @@
 import React from "react";
 import { Modal, Form, Input, message, Upload } from "antd";
 import { useDispatch, useSelector } from "react-redux";
+import { EnvironmentOutlined } from "@ant-design/icons";
 import { setIsModalEditOpenAction } from "../../redux/slices/quanLyViTriSlice";
 import { viTriServices } from "../../services/viTriServices";
 import {
   fetchListViTriAction,
   fetchViTriInfoAction,
 } from "../../redux/thunks/quanLyViTriThunks";
+import AdminModalHeader from "../../components/Admin/AdminModalHeader";
 
 export default function ModalEditQLViTri({ valueInput }) {
   const { isModalEditOpen, viTriInfo, currentPage } = useSelector(
@@ -29,11 +31,11 @@ export default function ModalEditQLViTri({ valueInput }) {
   const handleOk = (values) => {
     // nếu hinhAnh của form ko có
     if (!values.hinhAnh) {
-      // ko edit hình => hinhAnh của form = viTriInfo.hinhAnh
-      values.hinhAnh = viTriInfo.hinhAnh;
+      // ko edit hình => giữ ảnh cũ
+      values.hinhAnh = viTriInfo.hinh_anh;
       // gọi api edit
       viTriServices
-        .editViTri(values.id, values, token)
+        .editViTri(values, token)
         .then((result) => {
           // => update list
           dispatch(fetchViTriInfoAction(values.id));
@@ -54,10 +56,11 @@ export default function ModalEditQLViTri({ valueInput }) {
       viTriServices
         .uploadHinhViTri(formData, values.id, token)
         .then((result) => {
-          values.hinhAnh = result.data.content.hinhAnh;
+          values.hinhAnh =
+            result.data?.content?.hinh_anh ?? result.data?.content?.hinhAnh;
           // => gọi api edit
           viTriServices
-            .editViTri(values.id, values, token)
+            .editViTri(values, token)
             .then((result) => {
               // => update list
               dispatch(fetchViTriInfoAction(values.id));
@@ -79,9 +82,9 @@ export default function ModalEditQLViTri({ valueInput }) {
     if (viTriInfo) {
       return {
         id: viTriInfo.id,
-        tenViTri: viTriInfo.tenViTri,
-        tinhThanh: viTriInfo.tinhThanh,
-        quocGia: viTriInfo.quocGia,
+        tenViTri: viTriInfo.ten_vi_tri,
+        tinhThanh: viTriInfo.tinh_thanh,
+        quocGia: viTriInfo.quoc_gia,
       };
     }
   };
@@ -89,6 +92,8 @@ export default function ModalEditQLViTri({ valueInput }) {
   return (
     <div>
       <Modal
+        className="admin-modal"
+        centered
         closable={false}
         open={isModalEditOpen}
         okText="Cập nhật"
@@ -96,11 +101,8 @@ export default function ModalEditQLViTri({ valueInput }) {
         okButtonProps={{
           autoFocus: true,
           htmlType: "submit",
-          style: {
-            backgroundColor: "rgb(254 107 110)",
-          },
+          style: { backgroundColor: "#ff385c", borderColor: "#ff385c" },
         }}
-        prop
         onCancel={hideModal}
         destroyOnClose
         modalRender={(dom) => (
@@ -116,12 +118,19 @@ export default function ModalEditQLViTri({ valueInput }) {
           </Form>
         )}
       >
-        <h1 className="my-3 text-2xl text-center">Cập nhật vị trí</h1>
-        hinhAnh
-        <img src={viTriInfo?.hinhAnh} alt="" className="h-48 w-full" />
+        <AdminModalHeader
+          icon={<EnvironmentOutlined />}
+          title="Cập nhật vị trí"
+          subtitle="Chỉnh sửa thông tin địa điểm"
+        />
+        <img
+          src={viTriInfo?.hinh_anh}
+          alt=""
+          className="mb-4 h-44 w-full rounded-xl object-cover"
+        />
         {/* hinhAnh */}
         <Form.Item
-          label=""
+          label="Đổi hình ảnh"
           name="hinhAnh"
           valuePropName="fileList"
           getValueFromEvent={normFile}

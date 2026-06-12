@@ -97,8 +97,9 @@ export default function ListUser({ valueInput }) {
       key: "action",
       render: (_, dataObject) => {
         return (
-          <div>
-            <EditOutlined
+          <div className="flex items-center gap-2">
+            <button
+              title="Sửa"
               onClick={() => {
                 dispatch(fetchUserInfoAction(dataObject.id))
                   .then((result) => {
@@ -108,8 +109,10 @@ export default function ListUser({ valueInput }) {
                     console.error(err);
                   });
               }}
-              className=" text-2xl hover:cursor-pointer mr-2"
-            />
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition hover:bg-blue-50 hover:text-blue-500"
+            >
+              <EditOutlined />
+            </button>
             {/* Popconfirm bọc nút xóa => confirm => chạy hàm xóa */}
             <Popconfirm
               title="Xoá người dùng"
@@ -121,7 +124,12 @@ export default function ListUser({ valueInput }) {
                 danger: "danger",
               }}
             >
-              <DeleteOutlined className=" text-2xl hover:cursor-pointer " />
+              <button
+                title="Xoá"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition hover:bg-red-50 hover:text-red-500"
+              >
+                <DeleteOutlined />
+              </button>
             </Popconfirm>
           </div>
         );
@@ -135,7 +143,9 @@ export default function ListUser({ valueInput }) {
         avatar: user.avatar,
         id: user.id,
         name: user.name,
-        birthday: dayjs(user.birthday).format("DD/MM/YYYY"),
+        birthday: user.birth_day
+          ? dayjs(user.birth_day).format("DD/MM/YYYY")
+          : "—",
         email: user.email,
         role: user.role,
       };
