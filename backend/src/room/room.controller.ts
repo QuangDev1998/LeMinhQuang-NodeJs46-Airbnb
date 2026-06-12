@@ -34,8 +34,14 @@ export class RoomController {
 
   @Get()
   @ApiQuery({ name: 'category', required: false, type: String })
-  async getAll(@Query('category') category?: string) {
-    const result = await this.roomService.getAll(category);
+  @ApiQuery({ name: 'ngayDen', required: false, type: String })
+  @ApiQuery({ name: 'ngayDi', required: false, type: String })
+  async getAll(
+    @Query('category') category?: string,
+    @Query('ngayDen') ngayDen?: string,
+    @Query('ngayDi') ngayDi?: string,
+  ) {
+    const result = await this.roomService.getAll(category, ngayDen, ngayDi);
     return {
       statusCode: 200,
       content: result,
@@ -68,13 +74,35 @@ export class RoomController {
     @Query('pageSize') pageSize = 10,
     @Query('keyword') keyword?: string,
   ) {
-    return this.roomService.paginate(+pageIndex, +pageSize, keyword);
+    const result = await this.roomService.paginate(
+      +pageIndex,
+      +pageSize,
+      keyword,
+    );
+    return {
+      statusCode: 200,
+      content: result,
+      message: 'Tìm kiếm phòng thành công',
+      dateTime: new Date().toLocaleString('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+      }),
+    };
   }
 
   @Get('by-location')
   @ApiQuery({ name: 'locationId', required: true, type: Number })
-  async getByLocation(@Query('locationId') locationId: number) {
-    const data = await this.roomService.getByLocation(+locationId);
+  @ApiQuery({ name: 'ngayDen', required: false, type: String })
+  @ApiQuery({ name: 'ngayDi', required: false, type: String })
+  async getByLocation(
+    @Query('locationId') locationId: number,
+    @Query('ngayDen') ngayDen?: string,
+    @Query('ngayDi') ngayDi?: string,
+  ) {
+    const data = await this.roomService.getByLocation(
+      +locationId,
+      ngayDen,
+      ngayDi,
+    );
     return {
       statusCode: 200,
       content: data,

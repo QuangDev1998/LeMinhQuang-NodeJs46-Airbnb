@@ -16,7 +16,6 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
 @ApiTags('BinhLuan')
 @ApiBearerAuth('access-token')
 @Controller('binh-luan')
-@UseGuards(JwtAuthGuard)
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
@@ -26,16 +25,19 @@ export class CommentController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(@Body() dto: CreateCommentDto) {
     return this.commentService.create(dto);
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   update(@Param('id') id: number, @Body() dto: UpdateCommentDto) {
     return this.commentService.update(+id, dto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: number) {
     return this.commentService.remove(+id);
   }

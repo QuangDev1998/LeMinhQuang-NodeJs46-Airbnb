@@ -26,8 +26,39 @@ export class RoomService {
     return { statusCode, content, dateTime: this.getDateTime(), ...extra };
   }
 
-  async getAll(category?: string) {
-    const where = category && category !== 'Tất cả' ? { loai_phong: category } : {};
+  /**
+   * Điều kiện Prisma để chỉ lấy phòng CÒN TRỐNG trong khoảng [ngayDen, ngayDi).
+   * Phòng trống = không có đơn đặt nào trùng lịch
+   * (đơn hiện có: ngay_den < ngayDi  VÀ  ngay_di > ngayDen).
+   * Không truyền ngày -> trả {} (không lọc theo ngày).
+   */
+  private availabilityWhere(ngayDen?: string, ngayDi?: string) {
+    if (!ngayDen || !ngayDi) return {};
+    const den = new Date(ngayDen);
+    const di = new Date(ngayDi);
+    if (isNaN(den.getTime()) || isNaN(di.getTime())) {
+      throw new BadRequestException('Ngày tìm kiếm không hợp lệ');
+    }
+    if (den >= di) {
+      throw new BadRequestException('Ngày đến phải trước ngày đi');
+    }
+    return {
+      NOT: {
+        DatPhong: {
+          some: {
+            ngay_den: { lt: di },
+            ngay_di: { gt: den },
+          },
+        },
+      },
+    };
+  }
+
+  async getAll(category?: string, ngayDen?: string, ngayDi?: string) {
+    const where = {
+      ...(category && category !== 'Tất cả' ? { loai_phong: category } : {}),
+      ...this.availabilityWhere(ngayDen, ngayDi),
+    };
     const rooms = await this.prisma.phong.findMany({ where });
     return rooms.map((room) => this.mapRoom(room));
   }
@@ -82,9 +113,9 @@ export class RoomService {
 
   async paginate(pageIndex: number, pageSize: number, keyword?: string) {
     const skip = (pageIndex - 1) * pageSize;
-    const where = keyword
-      ? { ten_phong: { contains: keyword, mode: 'insensitive' } }
-      : {};
+    // MySQL không hỗ trợ `mode: 'insensitive'` của Prisma (chỉ PostgreSQL/Mongo) -> gây lỗi 500.
+    // Collation mặc định của MySQL vốn không phân biệt hoa/thường nên dùng `contains` trực tiếp.
+    const where = keyword ? { ten_phong: { contains: keyword } } : {};
 
     const [rooms, total] = await Promise.all([
       this.prisma.phong.findMany({ where, skip, take: pageSize }),
@@ -100,9 +131,12 @@ export class RoomService {
     };
   }
 
-  async getByLocation(viTriId: number) {
+  async getByLocation(viTriId: number, ngayDen?: string, ngayDi?: string) {
     const rooms = await this.prisma.phong.findMany({
-      where: { vi_tri_id: viTriId },
+      where: {
+        vi_tri_id: viTriId,
+        ...this.availabilityWhere(ngayDen, ngayDi),
+      },
     });
     return rooms.map((room) => this.mapRoom(room));
   }

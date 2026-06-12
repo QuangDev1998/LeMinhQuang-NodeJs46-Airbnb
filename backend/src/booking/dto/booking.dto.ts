@@ -12,14 +12,14 @@ export class CreateBookingDto {
     description: 'Ngày đến (ISO format)',
   })
   @IsDateString()
-  ngay_den: Date;
+  ngay_den: string;
 
   @ApiProperty({
     example: '2025-04-10T03:20:05.800Z',
     description: 'Ngày đi (ISO format)',
   })
   @IsDateString()
-  ngay_di: Date;
+  ngay_di: string;
 
   @ApiProperty({ example: 1, description: 'Số lượng khách' })
   @IsInt()
@@ -40,12 +40,12 @@ export class UpdateBookingDto {
   @ApiProperty({ example: '2025-04-08T03:20:05.800Z', required: false })
   @IsOptional()
   @IsDateString()
-  ngay_den?: Date;
+  ngay_den?: string;
 
   @ApiProperty({ example: '2025-04-10T03:20:05.800Z', required: false })
   @IsOptional()
   @IsDateString()
-  ngay_di?: Date;
+  ngay_di?: string;
 
   @ApiProperty({ example: 1, required: false })
   @IsOptional()
