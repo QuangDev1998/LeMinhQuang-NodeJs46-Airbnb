@@ -1,14 +1,25 @@
-import React from "react";
-import bannerVideo from "../../assets/image/banner.mp4";
+import React, { useState } from "react";
+import bannerSD from "../../assets/image/banner.mp4";
+import bannerHD from "../../assets/image/banner-hd.mp4";
 import bannerPoster from "../../assets/image/banner-poster.jpg";
 
 export default function Carousel() {
+  // Desktop (>=768px) tải bản nét 1080p (~12MB); mobile tải bản nhẹ 720p (~3.3MB).
+  // Màn điện thoại nhỏ nên 720p vẫn nhìn nét mà đỡ tốn 4G.
+  const [src] = useState(() =>
+    typeof window !== "undefined" &&
+    window.matchMedia("(min-width: 768px)").matches
+      ? bannerHD
+      : bannerSD
+  );
+
   return (
     <div className="container">
       <div className="relative h-[60vh] max-h-[560px] min-h-[360px] w-full overflow-hidden rounded-3xl bg-gray-900">
-        {/* Video đã nén 77MB -> 3.3MB. poster hiện ngay lập tức (84KB) trong khi
-            video tải, và là ảnh dự phòng nếu trình duyệt chặn autoplay. */}
+        {/* poster 84KB hiện ngay; video tải xong thì chạy đè (và là fallback nếu
+            trình duyệt chặn autoplay) */}
         <video
+          key={src}
           autoPlay
           loop
           muted
@@ -17,7 +28,7 @@ export default function Carousel() {
           poster={bannerPoster}
           className="absolute inset-0 h-full w-full object-cover"
         >
-          <source src={bannerVideo} type="video/mp4" />
+          <source src={src} type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent" />
 
