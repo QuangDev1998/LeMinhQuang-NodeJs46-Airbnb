@@ -55,7 +55,7 @@ export default function ListBookedRoom() {
     if (!Array.isArray(listViTri)) return "Không rõ";
 
     const index = listViTri.findIndex((viTri) => viTri.id === id);
-    return index !== -1 ? listViTri[index].tinhThanh : "Không rõ";
+    return index !== -1 ? listViTri[index].tinh_thanh : "Không rõ";
   };
 
   const renderDateBookRoom = (idBooking) => {
@@ -126,7 +126,7 @@ export default function ListBookedRoom() {
               </h3>
               <p className="mt-1 text-sm text-gray-500">
                 <EnvironmentOutlined className="mr-1" />
-                {renderTinhThanh(room.maViTri)}
+                {renderTinhThanh(room.viTriId)}
               </p>
             </div>
 

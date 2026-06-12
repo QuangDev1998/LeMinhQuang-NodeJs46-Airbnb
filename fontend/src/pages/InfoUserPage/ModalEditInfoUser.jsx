@@ -57,7 +57,7 @@ export default function ModalEditInfoUser() {
         phone: infoUser.phone,
         email: infoUser.email,
         gender: infoUser.gender,
-        birthday: dayjs(infoUser.birthday),
+        birthday: infoUser.birth_day ? dayjs(infoUser.birth_day) : null,
         role: infoUser.role,
       };
     }

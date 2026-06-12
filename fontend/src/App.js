@@ -3,6 +3,7 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { ConfigProvider, theme as antdTheme } from "antd";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AdminLayout from "./templates/AdminLayout";
 import QuanLyNguoiDungPage from "./pages/QuanLyNguoiDungPage/QuanLyNguoiDungPage";
@@ -54,10 +55,20 @@ function App() {
     }
   }, [dispatch]);
   return (
-    <div>
-      <Spinner />
-      <BrowserRouter>
-        <ScrollToTop />
+    <ConfigProvider
+      theme={{
+        // Dark mode cho TOÀN BỘ antd (Modal/Form/Select/Table/DatePicker/Tag...)
+        algorithm:
+          themeMode === "dark"
+            ? antdTheme.darkAlgorithm
+            : antdTheme.defaultAlgorithm,
+        token: { colorPrimary: "#ff385c" },
+      }}
+    >
+      <div>
+        <Spinner />
+        <BrowserRouter>
+          <ScrollToTop />
         <Routes>
           <Route
             path="/info-user"
@@ -100,7 +111,8 @@ function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
-    </div>
+      </div>
+    </ConfigProvider>
   );
 }
 
