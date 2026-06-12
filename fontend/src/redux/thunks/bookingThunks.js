@@ -10,7 +10,8 @@ export const getListIdBookingAction = createAsyncThunk(
     // tạo array chứa id phòng đã book
     let listIdBookingClone = [];
     for (let i = 0; i < bookingData.length; i++) {
-      listIdBookingClone.push(bookingData[i].maPhong);
+      // API /dat-phong/lay-theo-nguoi-dung trả snake_case (ma_phong)
+      listIdBookingClone.push(bookingData[i].ma_phong);
     }
     let listIdBookingJson = JSON.stringify(listIdBookingClone);
     localStorage.setItem("LIST_ID_BOOKING", listIdBookingJson);

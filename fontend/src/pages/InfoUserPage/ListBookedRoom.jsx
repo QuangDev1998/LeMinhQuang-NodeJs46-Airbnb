@@ -61,8 +61,8 @@ export default function ListBookedRoom() {
   const renderDateBookRoom = (idBooking) => {
     let index = listBooked.findIndex((room) => room.id === idBooking);
     if (index !== -1) {
-      const ngayDen = dayjs(listBooked[index].ngayDen).format("DD/MM/YYYY");
-      const ngayDi = dayjs(listBooked[index].ngayDi).format("DD/MM/YYYY");
+      const ngayDen = dayjs(listBooked[index].ngay_den).format("DD/MM/YYYY");
+      const ngayDi = dayjs(listBooked[index].ngay_di).format("DD/MM/YYYY");
       return (
         <span>
           {ngayDen} - {ngayDi}
