@@ -11,6 +11,15 @@ jobs:
     runs-on: air_bnb
 
     steps:
+      # Cập nhật docker-compose.yml / Caddyfile mới nhất NGAY TRONG thư mục
+      # runner đang dùng -> giữ nguyên compose project & volume (không mất DB).
+      # Dùng fetch + reset --hard (không git clean) nên KHÔNG xoá file untracked
+      # như .env hay uploads/.
+      - name: Cập nhật mã nguồn mới nhất từ repo
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
+
       - name: Xóa file .env cũ
         run: sudo rm -rf .env
 
