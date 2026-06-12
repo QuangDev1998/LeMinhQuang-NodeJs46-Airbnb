@@ -2,7 +2,9 @@ import axios from "axios";
 import { store } from "../redux/store";
 import { turnOffLoading, turnOnLoading } from "../redux/slices/spinnerSlice";
 
-const BASE_URL = "http://localhost:3001/api";
+// Production: đặt REACT_APP_API_URL trên Netlify (vd https://api.domain.com/api)
+// Dev (localhost) tự fallback nếu không có biến môi trường.
+const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:3001/api";
 
 export const http = axios.create({
   baseURL: BASE_URL,

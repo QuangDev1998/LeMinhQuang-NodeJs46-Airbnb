@@ -1,0 +1,19 @@
+# Cấu hình deploy frontend (CRA) lên Netlify.
+# Frontend nằm trong thư mục ./fontend của repo.
+
+[build]
+  base = "fontend"
+  command = "npm run build"
+  publish = "build"
+
+[build.environment]
+  # CRA mặc định coi warning là lỗi khi CI=true -> tắt để build không fail vì warning
+  CI = "false"
+  # REACT_APP_API_URL: KHÔNG đặt ở đây. Hãy đặt trong Netlify UI
+  # (Site settings -> Environment variables) để trỏ tới backend production.
+
+# SPA: mọi route trả về index.html cho React Router
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
