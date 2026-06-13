@@ -53,14 +53,9 @@ export class SignupDto {
   @IsString()
   gender: 'true' | 'false';
 
-  @ApiProperty({
-    example: 'USER',
-    description: 'Vai trò người dùng (USER / ADMIN)',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  role?: string;
+  // BẢO MẬT: KHÔNG cho client tự đặt role qua đăng ký công khai.
+  // Mọi tài khoản đăng ký luôn là USER; cấp quyền ADMIN phải làm thủ công ở DB
+  // hoặc qua endpoint /users (POST) đã được khoá @Roles('ADMIN').
 }
 
 export class SigninDto {

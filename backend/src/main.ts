@@ -16,6 +16,9 @@ async function bootstrap() {
     new ValidationPipe({
       transform: true,
       transformOptions: { enableImplicitConversion: true },
+      // BẢO MẬT: loại bỏ field không khai báo trong DTO (chống mass-assignment,
+      // vd cố gửi role/ma_nguoi_dat lạ vào payload)
+      whitelist: true,
     }),
   );
 

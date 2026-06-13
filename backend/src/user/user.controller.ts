@@ -30,12 +30,17 @@ import { memoryStorage } from 'multer';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  // BẢO MẬT: danh sách user chứa email/SĐT/ngày sinh -> chỉ ADMIN
   @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   getAll() {
     return this.userService.getAll();
   }
 
   @Get('/phan-trang-tim-kiem')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   getPaging(
     @Query('pageIndex') pageIndex: number,
     @Query('pageSize') pageSize: number,
@@ -44,8 +49,15 @@ export class UserController {
     return this.userService.getPaging(pageIndex, pageSize, keyword);
   }
 
+  // BẢO MẬT: chỉ chính chủ hoặc admin mới xem thông tin 1 user
   @Get(':id')
-  getById(@Param('id', ParseIntPipe) id: number) {
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  getById(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
+    const current = req.user as { id: number; role: string };
+    if (current.role !== 'ADMIN' && current.id !== id) {
+      throw new ForbiddenException('Bạn chỉ được xem thông tin của chính mình');
+    }
     return this.userService.getById(id);
   }
 

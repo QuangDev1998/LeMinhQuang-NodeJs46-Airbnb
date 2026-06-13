@@ -39,7 +39,8 @@ export class AuthService {
         birth_day: dto.birth_day ? new Date(dto.birth_day) : null,
         // Chấp nhận cả boolean true lẫn chuỗi 'true'
         gender: (dto.gender as unknown) === true || dto.gender === 'true',
-        role: dto.role || 'USER',
+        // BẢO MẬT: đăng ký công khai LUÔN là USER (không nhận role từ client)
+        role: 'USER',
       },
     });
 

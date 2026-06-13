@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -7,9 +8,18 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateBookingDto, UpdateBookingDto } from './dto/booking.dto';
 import { format } from 'date-fns-tz';
 
+type CurrentUser = { id: number; role: string };
+
 @Injectable()
 export class BookingService {
   constructor(private prisma: PrismaService) {}
+
+  // BẢO MẬT: chỉ chủ booking hoặc admin mới được thao tác
+  private assertOwnerOrAdmin(ownerId: number, user: CurrentUser) {
+    if (user.role !== 'ADMIN' && user.id !== ownerId) {
+      throw new ForbiddenException('Bạn không có quyền với booking này');
+    }
+  }
 
   private getDateTime() {
     return format(new Date(), "yyyy-MM-dd'T'HH:mm:ssXXX", {
@@ -30,9 +40,10 @@ export class BookingService {
     return this.response(data);
   }
 
-  async getById(id: number) {
+  async getById(id: number, user: CurrentUser) {
     const booking = await this.prisma.datPhong.findUnique({ where: { id } });
     if (!booking) throw new NotFoundException('Booking không tồn tại');
+    this.assertOwnerOrAdmin(booking.ma_nguoi_dat, user);
     return this.response(booking);
   }
 
@@ -78,7 +89,7 @@ export class BookingService {
     }
   }
 
-  async create(dto: CreateBookingDto) {
+  async create(dto: CreateBookingDto, userId: number) {
     const ngayDen = new Date(dto.ngay_den);
     const ngayDi = new Date(dto.ngay_di);
     await this.validateBooking(
@@ -94,16 +105,18 @@ export class BookingService {
         ngay_den: ngayDen,
         ngay_di: ngayDi,
         so_luong_khach: dto.so_luong_khach,
-        ma_nguoi_dat: dto.ma_nguoi_dat,
+        // BẢO MẬT: gắn người đặt = user đang đăng nhập, KHÔNG tin ma_nguoi_dat từ body
+        ma_nguoi_dat: userId,
       },
     });
 
     return this.response(booking, 201);
   }
 
-  async update(id: number, dto: UpdateBookingDto) {
+  async update(id: number, dto: UpdateBookingDto, user: CurrentUser) {
     const current = await this.prisma.datPhong.findUnique({ where: { id } });
     if (!current) throw new NotFoundException('Booking không tồn tại');
+    this.assertOwnerOrAdmin(current.ma_nguoi_dat, user);
 
     // Lấy giá trị mới nếu có, ngược lại giữ giá trị cũ
     const maPhong = dto.ma_phong ?? current.ma_phong;
@@ -124,13 +137,17 @@ export class BookingService {
     return this.response(updated);
   }
 
-  async remove(id: number) {
-    await this.getById(id);
+  async remove(id: number, user: CurrentUser) {
+    const current = await this.prisma.datPhong.findUnique({ where: { id } });
+    if (!current) throw new NotFoundException('Booking không tồn tại');
+    this.assertOwnerOrAdmin(current.ma_nguoi_dat, user);
     const deleted = await this.prisma.datPhong.delete({ where: { id } });
     return this.response(deleted);
   }
 
-  async getByUser(maNguoiDung: number) {
+  async getByUser(maNguoiDung: number, user: CurrentUser) {
+    // BẢO MẬT: chỉ xem được lịch sử đặt phòng của chính mình (admin xem mọi người)
+    this.assertOwnerOrAdmin(maNguoiDung, user);
     const data = await this.prisma.datPhong.findMany({
       where: { ma_nguoi_dat: maNguoiDung },
     });

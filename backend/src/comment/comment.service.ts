@@ -1,7 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCommentDto, UpdateCommentDto } from './dto/comment.dto';
 import { format } from 'date-fns-tz';
+
+type CurrentUser = { id: number; role: string };
 
 @Injectable()
 export class CommentService {
@@ -26,10 +32,12 @@ export class CommentService {
     return this.response(data);
   }
 
-  async create(dto: CreateCommentDto) {
+  async create(dto: CreateCommentDto, userId: number) {
     const newComment = await this.prisma.binhLuan.create({
       data: {
         ...dto,
+        // BẢO MẬT: người bình luận = user đăng nhập, KHÔNG tin field từ body
+        ma_nguoi_binh_luan: userId,
         ngay_binh_luan: dto.ngay_binh_luan
           ? new Date(dto.ngay_binh_luan)
           : new Date(),
@@ -38,12 +46,15 @@ export class CommentService {
     return this.response(newComment, 201);
   }
 
-  async update(id: number, dto: UpdateCommentDto) {
-    await this.findById(id);
+  async update(id: number, dto: UpdateCommentDto, user: CurrentUser) {
+    const comment = await this.findById(id);
+    this.assertOwnerOrAdmin(comment.ma_nguoi_binh_luan, user);
     const updated = await this.prisma.binhLuan.update({
       where: { id },
       data: {
         ...dto,
+        // không cho đổi chủ bình luận khi cập nhật
+        ma_nguoi_binh_luan: comment.ma_nguoi_binh_luan,
         ngay_binh_luan: dto.ngay_binh_luan
           ? new Date(dto.ngay_binh_luan)
           : undefined,
@@ -52,10 +63,18 @@ export class CommentService {
     return this.response(updated);
   }
 
-  async remove(id: number) {
-    await this.findById(id);
+  async remove(id: number, user: CurrentUser) {
+    const comment = await this.findById(id);
+    this.assertOwnerOrAdmin(comment.ma_nguoi_binh_luan, user);
     const deleted = await this.prisma.binhLuan.delete({ where: { id } });
     return this.response(deleted);
+  }
+
+  // BẢO MẬT: chỉ chủ bình luận hoặc admin mới được sửa/xoá
+  private assertOwnerOrAdmin(ownerId: number, user: CurrentUser) {
+    if (user.role !== 'ADMIN' && user.id !== ownerId) {
+      throw new ForbiddenException('Bạn không có quyền với bình luận này');
+    }
   }
 
   async getByRoom(maPhong: number) {
