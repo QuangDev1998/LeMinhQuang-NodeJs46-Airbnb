@@ -21,7 +21,7 @@ export default function Carousel() {
             loop
             muted
             playsInline
-            preload="auto"
+            preload="metadata"
             poster={bannerPoster}
             className="absolute inset-0 h-full w-full object-cover"
           >
