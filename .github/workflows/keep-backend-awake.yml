@@ -4,7 +4,9 @@ name: KEEP-BACKEND-AWAKE
 # Cron mỗi 10 phút ping endpoint để server không bao giờ ngủ -> hết cold-start ~30-60s.
 on:
   schedule:
-    - cron: "*/10 * * * *" # mỗi 10 phút (GitHub có thể trễ vài phút khi tải cao)
+    # Phút lệch (không rơi vào :00) để né giờ cao điểm GitHub — cron "*/10" hay bị
+    # throttle chỉ chạy ~1 lần/giờ. Đây là lớp DỰ PHÒNG; pinger chính là cron-job.org.
+    - cron: "4,14,24,34,44,54 * * * *"
   workflow_dispatch: {} # cho phép bấm chạy tay trong tab Actions
 
 jobs:

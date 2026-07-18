@@ -1,5 +1,6 @@
-# Render Blueprint — deploy backend demo (SQLite, miễn phí).
-# Mỗi lần khởi động: tạo schema SQLite + seed dữ liệu + gắn ảnh thật rồi chạy app.
+# Render Blueprint — deploy backend (Postgres managed/Neon, miễn phí).
+# Khởi động: đồng bộ schema (KHÔNG xoá data) -> seed nếu DB rỗng -> gắn ảnh nếu
+# chưa có -> chạy app. Data người dùng TỒN TẠI VĨNH VIỄN qua mọi lần restart.
 services:
   - type: web
     name: airbnb-backend
@@ -7,11 +8,15 @@ services:
     plan: free
     rootDir: backend
     buildCommand: npm install && npx prisma generate --schema=prisma/schema.prod.prisma && npm run build
-    startCommand: npx prisma db push --schema=prisma/schema.prod.prisma --force-reset --skip-generate && npx prisma db seed && node prisma/seed/update-room-images.js && node dist/src/main.js
+    # KHÔNG còn --force-reset: db push chỉ tạo bảng nếu thiếu, không xoá data.
+    # seed.ts & update-room-images.js đã idempotent (tự bỏ qua khi đã có data).
+    startCommand: npx prisma db push --schema=prisma/schema.prod.prisma --skip-generate && npx prisma db seed && node prisma/seed/update-room-images.js && node dist/src/main.js
     healthCheckPath: /api/vi-tri
     envVars:
       - key: DATABASE_URL
-        value: file:./prod.db
+        # Connection string Neon (direct, KHÔNG -pooler), nhập tay trong Render
+        # dashboard. VD: postgresql://user:pass@ep-xxx.region.aws.neon.tech/db?sslmode=require
+        sync: false
       - key: CLIENT_URL
         value: "*"
       - key: ACCESS_TOKEN_SECRET

@@ -90,6 +90,17 @@ const COVERS = {
 const pick = (arr, i) => arr[((i % arr.length) + arr.length) % arr.length];
 
 (async () => {
+  // 🛡️ Idempotent: nếu ảnh unsplash đã được gắn trước đó thì BỎ QUA, tránh đè
+  // lên ảnh phòng mà admin có thể đã chỉnh sửa sau này.
+  const already = await prisma.phong.findFirst({
+    where: { danh_sach_anh: { contains: 'images.unsplash.com' } },
+  });
+  if (already) {
+    console.log('⏩ Ảnh phòng đã được set trước đó -> bỏ qua update ảnh.');
+    await prisma.$disconnect();
+    return;
+  }
+
   const rooms = await prisma.phong.findMany({ orderBy: { id: 'asc' } });
   // Đếm thứ tự phòng trong từng loại để mỗi phòng nhận ảnh khác nhau
   const idxByType = {};

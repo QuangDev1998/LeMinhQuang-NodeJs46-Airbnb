@@ -1,13 +1,17 @@
-// Schema RIÊNG cho demo trên Render (SQLite, không cần DB server).
-// Local/production thật vẫn dùng schema.prisma (MySQL). Giữ models giống hệt,
-// chỉ đổi provider sang sqlite và bỏ native type @db.Text (SQLite không hỗ trợ).
+// Schema RIÊNG cho deploy trên Render -> dùng Postgres managed (Neon) để DATA
+// TỒN TẠI VĨNH VIỄN, không reset khi BE restart. Local/dev vẫn dùng schema.prisma
+// (MySQL). Models giữ giống hệt; kiểu cơ bản (String/Int/Boolean/DateTime) map
+// thẳng sang Postgres nên không cần native type.
+//
+// DATABASE_URL = connection string Neon (direct, không -pooler), đặt trong
+// Render dashboard. VD: postgresql://user:pass@ep-xxx.region.aws.neon.tech/db?sslmode=require
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -62,7 +66,7 @@ model Phong {
   YeuThich      YeuThich[]
   ViTri         ViTri      @relation(fields: [vi_tri_id], references: [id])
 
-  @@index([vi_tri_id], map: "Phong_vi_tri_id_fkey")
+  @@index([vi_tri_id])
 }
 
 model YeuThich {
@@ -74,8 +78,8 @@ model YeuThich {
   Phong         Phong     @relation(fields: [ma_phong], references: [id])
 
   @@unique([ma_nguoi_dung, ma_phong])
-  @@index([ma_nguoi_dung], map: "YeuThich_ma_nguoi_dung_fkey")
-  @@index([ma_phong], map: "YeuThich_ma_phong_fkey")
+  @@index([ma_nguoi_dung])
+  @@index([ma_phong])
 }
 
 model DatPhong {
@@ -88,8 +92,8 @@ model DatPhong {
   NguoiDung      NguoiDung @relation(fields: [ma_nguoi_dat], references: [id])
   Phong          Phong     @relation(fields: [ma_phong], references: [id])
 
-  @@index([ma_nguoi_dat], map: "DatPhong_ma_nguoi_dat_fkey")
-  @@index([ma_phong], map: "DatPhong_ma_phong_fkey")
+  @@index([ma_nguoi_dat])
+  @@index([ma_phong])
 }
 
 model BinhLuan {
@@ -102,6 +106,6 @@ model BinhLuan {
   Phong              Phong     @relation(fields: [ma_phong], references: [id])
   NguoiDung          NguoiDung @relation(fields: [ma_nguoi_binh_luan], references: [id])
 
-  @@index([ma_phong], map: "BinhLuan_ma_phong_fkey")
-  @@index([ma_nguoi_binh_luan], map: "BinhLuan_ma_nguoi_binh_luan_fkey")
+  @@index([ma_phong])
+  @@index([ma_nguoi_binh_luan])
 }

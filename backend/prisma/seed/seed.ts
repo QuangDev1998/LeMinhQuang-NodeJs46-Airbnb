@@ -5,7 +5,18 @@ import * as bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  // 💣 Dọn sạch database trước khi seed
+  // 🛡️ GIỮ DATA: nếu DB đã có phòng (đã seed trước đó) thì BỎ QUA hoàn toàn,
+  // không xoá/seed lại. Nhờ vậy data người dùng tạo (đặt phòng, bình luận,
+  // tài khoản) tồn tại vĩnh viễn qua mọi lần BE restart trên Render.
+  const existingRooms = await prisma.phong.count();
+  if (existingRooms > 0) {
+    console.log(
+      `⏩ DB đã có ${existingRooms} phòng -> bỏ qua seed (giữ nguyên data hiện có).`,
+    );
+    return;
+  }
+
+  // 💣 Dọn sạch database trước khi seed (chỉ chạy lần đầu, DB còn rỗng)
   await prisma.binhLuan.deleteMany();
   await prisma.datPhong.deleteMany();
   await prisma.phong.deleteMany();
